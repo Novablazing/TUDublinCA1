@@ -11,7 +11,7 @@ on:
 jobs:
   BP-application-deployment:
 
-    runs-on: WIN-Q0GEAOGCQB5
+    runs-on: self-hosted
     
     steps:
         - name: Checkout code
