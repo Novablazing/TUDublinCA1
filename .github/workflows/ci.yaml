@@ -1,6 +1,7 @@
 name: Bp_Application_Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
      # - main
