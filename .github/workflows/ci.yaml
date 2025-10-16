@@ -1,6 +1,7 @@
 name: Bp_Application_Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
      # - main
@@ -16,3 +17,11 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
+
+        - name: actions/setup-dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '9.0.x'
+
+        - name: Release Build
+          run: dotnet build --configuration Release
