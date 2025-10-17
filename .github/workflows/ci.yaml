@@ -28,7 +28,7 @@ jobs:
           run: |
           
             dotnet build --configuration Release
-            dotnet publish -c Release -o 'myapp'' 
+            dotnet publish -c Release -o 'myapp' 
 
 
         - name: variable allocation
