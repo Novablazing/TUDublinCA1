@@ -8,6 +8,8 @@ on:
       - dev
      # - test
      # - stage
+    paths-ignore:
+      - '.github/workflows/**'
 
 jobs:
   BP-application-deployment:
@@ -20,3 +22,11 @@ jobs:
 
         - name: Release Build
           run: dotnet build --configuration Release
+
+        - name: Deploy to Azure Web App
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: 'bmitudublin' 
+            slot-name: 'production'
+            publish-profile: ${{ secrets.WEBAPP }}
+            package: ./publish
