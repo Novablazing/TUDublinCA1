@@ -11,6 +11,11 @@ on:
     paths-ignore:
       - '.github/workflows/**'
 
+env:
+  DEV_ENV: dev-bp-D00001
+  TEST_ENV: test-bp-T00001
+  PROD_ENV:
+
 jobs:
   BP-application-deployment:
 
