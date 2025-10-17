@@ -1,4 +1,4 @@
-name: Bp_Application_Build
+name: Bp_Application_Build_and_Deployment_CA1
 
 on:
   workflow_dispatch:
@@ -14,7 +14,6 @@ on:
 env:
   DEV_ENV: dev-bp-D00001
   TEST_ENV: test-bp-T00001
-  PROD_ENV:
 
 jobs:
   BP-application-deployment:
@@ -28,10 +27,17 @@ jobs:
         - name: Release Build
           run: dotnet build --configuration Release
 
+
+        - name: variable allocation
+          run: |
+            if: github.ref == 'refs/heads/dev'
+            WEBAPP=${{ env.DEV_ENV }}
+            elif: github.ref == 'refs/heads/test'
+            WEBAPP=${{ env.DEV_ENV }}
+
         - name: Deploy to Azure Web App
           uses: azure/webapps-deploy@v2
           with:
-            app-name: 'bmitudublin' 
-            slot-name: 'production'
+            app-name: ${{ env.WEBAPP }} 
             publish-profile: ${{ secrets.WEBAPP }}
             package: ./publish
