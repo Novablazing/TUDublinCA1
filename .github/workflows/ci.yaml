@@ -32,16 +32,21 @@ jobs:
 
         #Additional steps of the code comes here
 
-        - name: variable allocation
+        - name: set variable allocation
+          shell: pwsh
           run: |
-            if: github.ref == 'refs/heads/dev'
-            WEBAPP=${{ env.DEV_ENV }}
-            elif: github.ref == 'refs/heads/test'
-            WEBAPP=${{ env.DEV_ENV }}
+            if ($env:GITHUB_REF -eq 'refs/heads/dev') {
+              echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
+              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
+            } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
+              echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
+              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
+            }
+
 
         - name: Deploy to Azure Web App
           uses: azure/webapps-deploy@v2
           with:
             app-name: ${{ env.WEBAPP }} 
-            publish-profile: ${{ secrets.WEBAPP }}
+            publish-profile: ${{ secrets.WEB_SECRET_DEV }}
             package: ./publish
