@@ -49,9 +49,9 @@ jobs:
             }
 
 
-        - name: Deploy to Azure Web App
-          uses: azure/webapps-deploy@v2
-          with:
-            app-name: ${{ env.WEBAPP }} 
-            publish-profile: ${{ secrets.WEB_SECRET_DEV }}
-            package: ./publish
+        # - name: Deploy to Azure Web App
+        #   uses: azure/webapps-deploy@v2
+        #   with:
+        #     app-name: ${{ env.WEBAPP }} 
+        #     publish-profile: ${{ secrets.WEB_SECRET_DEV }}
+        #     package: ./publish

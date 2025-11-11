@@ -31,9 +31,18 @@ namespace BPCalculator
         {
             get
             {
+                if (Systolic >= 140 || Diastolic >= 90)
+                    return BPCategory.High;
+                if ((Systolic >= 120 && Systolic <= 139) ||(Diastolic >= 80 && Diastolic <= 89))
+                    return BPCategory.PreHigh;
+                if (Systolic < 90 || Diastolic < 60)
+                    return BPCategory.Low;
+                if (Systolic < 120 && Diastolic < 80)
+                    return BPCategory.Ideal;
                 // implement as part of project
                 //throw new NotImplementedException("not implemented yet");
-                return new BPCategory();                       // replace this
+                return BPCategory.Ideal;
+                //return new BPCategory();                       // replace this
             }
         }
     }
