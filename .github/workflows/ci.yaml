@@ -6,7 +6,7 @@ on:
     branches:
      # - main
       - dev
-     # - test
+      - test
      # - stage
     paths-ignore:
       - '.github/workflows/**'
