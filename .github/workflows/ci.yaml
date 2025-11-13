@@ -35,17 +35,17 @@ jobs:
           shell: bash
 
             
-        # - name: Sonar Scan
-        #   uses: sonarsource/sonarqube-scan-action@master
-        #   env:
-        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        #   with:
-        #     projectBaseDir: '/BPCalculator'
-        #     args: >
-        #       -Dsonar.projectKey=bloodpressurecalculator007
-        #       -Dsonar.verbose=true
-        #       -Dsonar.sourceEncoding=UTF-8
+        - name: Sonar Scan
+          uses: sonarsource/sonarqube-scan-action@master
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          with:
+            projectBaseDir: 'BPCalculator'
+            args: >
+              -Dsonar.projectKey=bloodpressurecalculator007
+              -Dsonar.verbose=true
+              -Dsonar.sourceEncoding=UTF-8
               
 
         # - name: Release Build
