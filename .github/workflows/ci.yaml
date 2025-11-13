@@ -39,15 +39,15 @@ jobs:
           uses: sonarsource/sonarqube-scan-action@master
           env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           with:
             projectBaseDir: 'BPCalculator'
             args: >
               -Dsonar.projectKey=bloodpressurecalculator007
               -Dsonar.verbose=true
               -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.projectName=BloodPressureCalculator
+              -Dsonar.organization=BloodPressureCalculator
               -Dsonar.projectVersion=1.0
+              -Dsonar.host.url=https://sonarcloud.io
         # - name: Release Build
         #   run: |
         #     dotnet build --configuration Release
