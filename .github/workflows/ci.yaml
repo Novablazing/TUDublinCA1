@@ -11,9 +11,9 @@ on:
     paths-ignore:
       - '.github/workflows/**'
 
-env:
-  DEV_ENV: dev-bp-D00001
-  TEST_ENV: test-bp-T00001
+# env:
+#   DEV_ENV: dev-bp-D00001
+#   TEST_ENV: test-bp-T00001
 
 jobs:
   BP-application-deployment:
@@ -27,7 +27,20 @@ jobs:
         - name: actions/setup-dotnet
           uses: actions/setup-dotnet@v4
           with:
-            dotnet-version: '9.0.x' 
+            dotnet-version: '9.0.x'
+            
+        - name: Sonar Scan
+          uses: sonarsource/sonarqube-scan-action@master
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          with:
+            projectBaseDir: '/BPCalculator'
+            args: >
+              -Dsonar.projectKey=bloodpressurecalculator007
+              -Dsonar.verbose=true
+              -Dsonar.sourceEncoding=UTF-8
+              
 
         - name: Release Build
           run: |
@@ -37,16 +50,16 @@ jobs:
 
         #Additional steps of the code comes here
 
-        - name: set variable allocation
-          shell: pwsh
-          run: |
-            if ($env:GITHUB_REF -eq 'refs/heads/dev') {
-              echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
-              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
-            } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
-              echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
-              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
-            }
+        # - name: set variable allocation
+        #   shell: pwsh
+        #   run: |
+        #     if ($env:GITHUB_REF -eq 'refs/heads/dev') {
+        #       echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
+        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
+        #     } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
+        #       echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
+        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
+        #     }
 
 
         # - name: Deploy to Azure Web App
