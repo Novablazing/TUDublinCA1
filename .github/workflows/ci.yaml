@@ -42,10 +42,10 @@ jobs:
           with:
             projectBaseDir: 'BPCalculator'
             args: >
-              -Dsonar.projectKey=bloodpressurecalculator007
+              -Dsonar.projectKey=CA1_bloodpressurecalculator
               -Dsonar.verbose=true
               -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.organization=BloodPressureCalculator
+              -Dsonar.organization=ca1
               -Dsonar.projectVersion=1.0
               -Dsonar.host.url=https://sonarcloud.io
         # - name: Release Build
