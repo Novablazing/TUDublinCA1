@@ -46,7 +46,7 @@ jobs:
               -Dsonar.projectKey=bloodpressurecalculator007
               -Dsonar.verbose=true
               -Dsonar.sourceEncoding=UTF-8
-              
+              -Dsonar.Organization=BloodPressureCalculator
 
         # - name: Release Build
         #   run: |
