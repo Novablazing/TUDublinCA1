@@ -75,6 +75,12 @@ jobs:
             file: ./Dockerfile
             tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
+        
+        - name: Run script with env vars
+          run: |
+            docker images
+
+
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@0.28.0
           with:
