@@ -12,9 +12,9 @@ on:
       - '.github/workflows/**'
 
 env:
-
-#   DEV_ENV: dev-bp-D00001
-#   TEST_ENV: test-bp-T00001
+  REGISTRY_IMAGE: bpcalculator
+  DEV_ENV: dev-nonprod
+  TEST_ENV: test-nonprod
 
 jobs:
   BP-application-deployment:
@@ -30,7 +30,7 @@ jobs:
         #   env:
         #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         #   with:
-        #     projectBaseDir: 'BPCalculator'
+        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
         #     args: >
         #       -Dsonar.projectKey=CA1_bloodpressurecalculator
         #       -Dsonar.verbose=true
@@ -39,25 +39,32 @@ jobs:
         #       -Dsonar.projectVersion=1.0
         #       -Dsonar.host.url=https://sonarcloud.io
 
-        # - name: Release Build
-        #   run: |
-        #     dotnet build --configuration Release
-        #     dotnet publish --configuration Release --output ./publish
+        - name: Sourcing Variables for Branch Tagging
+          id: Sourcing-Variables
+          run: |
+            BRANCH=${GITHUB_REF#refs/heads/}
+
+        - name: Build Docker image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            file: ./Dockerfile
+            tags: tudublinca.azurecr.io/${{ env.REGISTRY_IMAGE }}/${{ env.BRANCH }}:${{ github.run_number }}
 
 
         #Additional steps of the code comes here
 
         
-        - name: set variable allocation
-          shell: pwsh
-          run: |
-            if ($env:GITHUB_REF -eq 'refs/heads/dev') {
-              echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
-              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
-            } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
-              echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
-              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
-            }
+        # - name: set variable allocation
+        #   shell: pwsh
+        #   run: |
+        #     if ($env:GITHUB_REF -eq 'refs/heads/dev') {
+        #       echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
+        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
+        #     } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
+        #       echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
+        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
+        #     }
 
         # - name: Deploy to Azure Web App
         #   uses: azure/webapps-deploy@v2
