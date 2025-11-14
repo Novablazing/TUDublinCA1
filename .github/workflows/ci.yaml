@@ -74,6 +74,16 @@ jobs:
             cache-to: type=local,dest=/tmp/.buildx-cache
             file: ./Dockerfile
             tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+        - name: Run Trivy vulnerability scanner
+          uses: aquasecurity/trivy-action@0.28.0
+          with:
+            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+            format: 'table'
+            exit-code: '1'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
       
         #Additional steps of the code comes here
 
