@@ -12,3 +12,12 @@ RUN dotnet restore "./BPCalculator/BPCalculator.csproj"
 COPY . .
 WORKDIR "/src/BPCalculator"
 RUN dotnet build "./BPCalculator.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM buildproject AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./BPCalculator.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM baseimage AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "BPCalculator.dll"]

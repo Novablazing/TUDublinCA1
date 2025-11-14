@@ -11,7 +11,8 @@ on:
     paths-ignore:
       - '.github/workflows/**'
 
-# env:
+env:
+  BRANCH_NAME: ${{ github.ref_name }}
 #   DEV_ENV: dev-bp-D00001
 #   TEST_ENV: test-bp-T00001
 
@@ -48,7 +49,8 @@ jobs:
               -Dsonar.organization=ca1
               -Dsonar.projectVersion=1.0
               -Dsonar.host.url=https://sonarcloud.io
-              -Dsonar.branch.target=${{ github.ref_name }}
+              -Dsonar.branch.target=$BRANCH_NAME
+
         # - name: Release Build
         #   run: |
         #     dotnet build --configuration Release
@@ -57,17 +59,17 @@ jobs:
 
         #Additional steps of the code comes here
 
-        # - name: set variable allocation
-        #   shell: pwsh
-        #   run: |
-        #     if ($env:GITHUB_REF -eq 'refs/heads/dev') {
-        #       echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
-        #     } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
-        #       echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
-        #     }
-
+        
+        - name: set variable allocation
+          shell: pwsh
+          run: |
+            if ($env:GITHUB_REF -eq 'refs/heads/dev') {
+              echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
+              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
+            } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
+              echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
+              echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
+            }
 
         # - name: Deploy to Azure Web App
         #   uses: azure/webapps-deploy@v2
