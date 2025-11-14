@@ -44,9 +44,6 @@ jobs:
         #   id: Sourcing-Variables
         #   run: |
         #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-        
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v3
 
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
