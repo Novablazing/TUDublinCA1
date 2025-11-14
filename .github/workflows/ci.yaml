@@ -12,6 +12,7 @@ on:
       - '.github/workflows/**'
 
 env:
+  BRANCH: ${{ github.ref_name }}
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod
   TEST_ENV: test-nonprod
@@ -39,10 +40,10 @@ jobs:
         #       -Dsonar.projectVersion=1.0
         #       -Dsonar.host.url=https://sonarcloud.io
 
-        - name: Sourcing Variables for Branch Tagging
-          id: Sourcing-Variables
-          run: |
-            BRANCH=${GITHUB_REF#refs/heads/}
+        # - name: Sourcing Variables for Branch Tagging
+        #   id: Sourcing-Variables
+        #   run: |
+        #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
         - name: Build Docker image
           uses: docker/build-push-action@v5
