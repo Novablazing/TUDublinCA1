@@ -12,7 +12,7 @@ on:
       - '.github/workflows/**'
 
 env:
-  BRANCH_NAME: ${{ github.ref_name }}
+
 #   DEV_ENV: dev-bp-D00001
 #   TEST_ENV: test-bp-T00001
 
@@ -24,32 +24,20 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
-
-        - name: actions/setup-dotnet
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: '9.0.x'
-        
-        
-        - name: Run with custom shell
-          run: dir
-          shell: bash
-
             
-        - name: Sonar Scan
-          uses: sonarsource/sonarqube-scan-action@master
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          with:
-            projectBaseDir: 'BPCalculator'
-            args: >
-              -Dsonar.projectKey=CA1_bloodpressurecalculator
-              -Dsonar.verbose=true
-              -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.organization=ca1
-              -Dsonar.projectVersion=1.0
-              -Dsonar.host.url=https://sonarcloud.io
-              -Dsonar.branch.target=$BRANCH_NAME
+        # - name: Sonar Scan
+        #   uses: sonarsource/sonarqube-scan-action@master
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #   with:
+        #     projectBaseDir: 'BPCalculator'
+        #     args: >
+        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
+        #       -Dsonar.verbose=true
+        #       -Dsonar.sourceEncoding=UTF-8
+        #       -Dsonar.organization=ca1
+        #       -Dsonar.projectVersion=1.0
+        #       -Dsonar.host.url=https://sonarcloud.io
 
         # - name: Release Build
         #   run: |
