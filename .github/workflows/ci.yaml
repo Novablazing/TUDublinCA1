@@ -20,7 +20,7 @@ env:
 jobs:
   BP-application-deployment:
 
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
     
     steps:
         - name: Checkout code
