@@ -101,7 +101,7 @@ jobs:
         
 
   BP-application-CD:
-    if: always() && github.ref == 'refs/heads/dev' && github.ref == 'refs/heads/test'
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
     needs: BP-application-CI
     runs-on: ubuntu-22.04  
     
