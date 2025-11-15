@@ -68,21 +68,21 @@ jobs:
             username: tudublinca  # Logging through service account.
             password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
 
-        - name: Build Docker image
-          uses: docker/build-push-action@v5
-          with:
-            context: .
-          #  push: true
-            platforms: linux/amd64,linux/arm64
-            cache-from: type=local,src=/tmp/.buildx-cache
-            cache-to: type=local,dest=/tmp/.buildx-cache
-            file: ./Dockerfile
-            tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        # - name: Build Docker image
+        #   uses: docker/build-push-action@v5
+        #   with:
+        #     context: .
+        #   #  push: true
+        #     platforms: linux/amd64,linux/arm64
+        #     cache-from: type=local,src=/tmp/.buildx-cache
+        #     cache-to: type=local,dest=/tmp/.buildx-cache
+        #     file: ./Dockerfile
+        #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        - name: Run script for testing usage
+        - name: Run script docker image build
           run: |
-            docker images
+            docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
 
         - name: Run Trivy vulnerability scanner
