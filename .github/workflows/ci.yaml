@@ -133,6 +133,7 @@ jobs:
 
   BP-application-CD-Production:
     if: ${{ always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage') }}
+    environment: 'prod'
     needs: BP-application-CI
     runs-on: ubuntu-22.04
 
@@ -144,3 +145,5 @@ jobs:
         elif [ "$BRANCH" = "stage" ]; then
           WEBAPP="${{ env.STAGE_ENV }}"
         fi
+
+  
