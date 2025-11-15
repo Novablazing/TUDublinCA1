@@ -18,10 +18,9 @@ env:
   TEST_ENV: test-nonprod
 
 jobs:
-  BP-application-deployment:
-
+  BP-application-CI:
     runs-on: ubuntu-22.04
-    
+
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
@@ -80,10 +79,10 @@ jobs:
         #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        - name: Run script docker image build
+        - name: Docker Image Build and Push
           run: |
-            ls
             docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
             docker images
 
 
@@ -100,20 +99,23 @@ jobs:
         #Additional steps of the code comes here
 
         
-        # - name: set variable allocation
-        #   shell: pwsh
-        #   run: |
-        #     if ($env:GITHUB_REF -eq 'refs/heads/dev') {
-        #       echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
-        #     } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
-        #       echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
-        #     }
 
-        # - name: Deploy to Azure Web App
-        #   uses: azure/webapps-deploy@v2
-        #   with:
-        #     app-name: ${{ env.WEBAPP }} 
-        #     publish-profile: ${{ secrets.WEB_SECRET_DEV }}
-        #     package: ./publish
+  BP-application-CD:
+    if: always() && github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/test'
+
+    runs-on: ubuntu-22.04  
+    
+    steps:
+    - name: Populating variables For Non Production Environments
+      run: |
+        if [ "$BRANCH" = "dev" ]; then
+          WEBAPP="${{ env.DEV_ENV }}"
+        else [ "$BRANCH" = "test" ]; then
+          WEBAPP="${{ env.TEST_ENV }}"
+        fi
+
+    - name: Deploy to Azure Web App for Container
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.WEBAPP }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
