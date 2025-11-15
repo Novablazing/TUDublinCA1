@@ -110,7 +110,7 @@ jobs:
       run: |
         if [ "$BRANCH" = "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}"
-        else [ "$BRANCH" = "test" ]; then
+        elif [ "$BRANCH" = "test" ]; then
           WEBAPP="${{ env.TEST_ENV }}"
         fi
 
