@@ -119,6 +119,8 @@ jobs:
       #  enable-AzPSSession: true  
 
     - name: Populating variables For Non Production Environments
+      env:
+        BRANCH: ${{ github.ref_name }}
       run: |
         if [ "$BRANCH" = "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}" 
@@ -146,6 +148,8 @@ jobs:
 
     steps:
     - name: Populating variables For Non Production Environments
+      env:
+        BRANCH: ${{ github.ref_name }}
       run: |
         if [ "$BRANCH" = "main" ]; then
           WEBAPP="${{ env.PROD_ENV }}"
