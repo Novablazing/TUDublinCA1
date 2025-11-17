@@ -120,17 +120,18 @@ jobs:
       run: |
         if [ "$BRANCH" = "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}"
+          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}"
         elif [ "$BRANCH" = "test" ]; then
           WEBAPP="${{ env.TEST_ENV }}"
+          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}"
         fi
 
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.WEBAPP }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:53
-      #  images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        publish-profile: ${{ env.PUBLSIH_PROFILE }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
     if: ${{ always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage') }}
