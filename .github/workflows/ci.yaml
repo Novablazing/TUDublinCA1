@@ -128,8 +128,8 @@ jobs:
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         fi
 
-        echo "WEBAPP=$WEBAPP"
-        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE"
+        echo "WEBAPP=$WEBAPP" >> $GITHUB_ENV
+        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE" >> $GITHUB_ENV
         
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
