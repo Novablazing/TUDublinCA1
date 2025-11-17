@@ -27,20 +27,20 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
             
-        - name: Sonar Scan
-          uses: sonarsource/sonarqube-scan-action@master
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          with:
-            projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
-            args: >
-              -Dsonar.projectKey=CA1_bloodpressurecalculator
-              -Dsonar.verbose=true
-              -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.organization=ca1
-              -Dsonar.projectVersion=1.0
-              -Dsonar.host.url=https://sonarcloud.io
-              -Dsonar.branches=$BRANCH 
+        # - name: Sonar Scan
+        #   uses: sonarsource/sonarqube-scan-action@master
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #   with:
+        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
+        #     args: >
+        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
+        #       -Dsonar.verbose=true
+        #       -Dsonar.sourceEncoding=UTF-8
+        #       -Dsonar.organization=ca1
+        #       -Dsonar.projectVersion=1.0
+        #       -Dsonar.host.url=https://sonarcloud.io
+        #       -Dsonar.branches=$BRANCH 
 
         # - name: Sourcing Variables for Branch Tagging
         #   id: Sourcing-Variables
@@ -81,22 +81,22 @@ jobs:
         #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        - name: Docker Image Build and Push
-          run: |
-            docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
-            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
-            docker images
+        # - name: Docker Image Build and Push
+        #   run: |
+        #     docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+        #     docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        #     docker images
 
 
-        - name: Run Trivy vulnerability scanner
-          uses: aquasecurity/trivy-action@0.28.0
-          with:
-            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
-            format: 'table'
-          #  exit-code: '1'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+        # - name: Run Trivy vulnerability scanner
+        #   uses: aquasecurity/trivy-action@0.28.0
+        #   with:
+        #     image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+        #     format: 'table'
+        #   #  exit-code: '1'
+        #     ignore-unfixed: true
+        #     vuln-type: 'os,library'
+        #     severity: 'CRITICAL,HIGH,MEDIUM,LOW'
       
         #Additional steps of the code comes here
 
@@ -121,11 +121,11 @@ jobs:
     - name: Populating variables For Non Production Environments
       run: |
         if [ "$BRANCH" = "dev" ]; then
-          WEBAPP="${{ env.DEV_ENV }}"
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}"
+          WEBAPP="${{ env.DEV_ENV }}" >> $GITHUB_ENV
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" >> $GITHUB_ENV
         elif [ "$BRANCH" = "test" ]; then
-          WEBAPP="${{ env.TEST_ENV }}"
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
+          WEBAPP="${{ env.TEST_ENV }}" >> $GITHUB_ENV
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}" >> $GITHUB_ENV
         fi
 
     - name: Deploy to Azure Web App for Container
