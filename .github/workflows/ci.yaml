@@ -122,7 +122,7 @@ jobs:
       env:
         BRANCH: ${{ github.ref_name }}
       run: |
-        if [ "$BRANCH" == "dev" ]; then
+        if [ "$BRANCH" = "dev" ]; then                                                     
           WEBAPP="${{ env.DEV_ENV }}" 
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
         else 
@@ -138,7 +138,7 @@ jobs:
         images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
-    if: ${{ always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage') }}
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
     environment: 'prod'
     needs: BP-application-CI
     runs-on: ubuntu-22.04
@@ -163,5 +163,4 @@ jobs:
       - name: Post Deployment Tests
         run: |
           echo "Running post deployment tests..."
-          # Add your test commands here
-          echo "Post deployment tests completed."
+          
