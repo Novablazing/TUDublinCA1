@@ -123,11 +123,14 @@ jobs:
         if [ "$BRANCH" = "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}" 
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
-        elif [ "$BRANCH" = "test" ];
+        elif [ "$BRANCH" = "test" ]; then
           WEBAPP="${{ env.TEST_ENV }}"
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         fi
 
+        echo "WEBAPP=$WEBAPP"
+        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE"
+        
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
       with:
