@@ -121,11 +121,11 @@ jobs:
     - name: Populating variables For Non Production Environments
       run: |
         if [ "$BRANCH" = "dev" ]; then
-          WEBAPP="${{ env.DEV_ENV }}"
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}"
+          WEBAPP="${{ env.DEV_ENV }}" >> $GITHUB_ENV
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" >> $GITHUB_ENV
         elif [ "$BRANCH" = "test" ]; then
-          WEBAPP="${{ env.TEST_ENV }}"
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
+          WEBAPP="${{ env.TEST_ENV }}" >> $GITHUB_ENV
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}" >> $GITHUB_ENV
         fi
 
     - name: Deploy to Azure Web App for Container
