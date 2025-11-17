@@ -125,7 +125,7 @@ jobs:
         if [ "$BRANCH" == "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}" 
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
-        elif [ "$BRANCH" == "test" ]; then
+        else 
           WEBAPP="${{ env.TEST_ENV }}"
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         fi
