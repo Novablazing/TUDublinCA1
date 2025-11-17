@@ -11,67 +11,141 @@ on:
     paths-ignore:
       - '.github/workflows/**'
 
-# env:
-#   DEV_ENV: dev-bp-D00001
-#   TEST_ENV: test-bp-T00001
+env:
+  BRANCH: ${{ github.ref_name }}
+  REGISTRY_IMAGE: bpcalculator
+  DEV_ENV: dev-nonprod
+  TEST_ENV: test-nonprod
 
 jobs:
-  BP-application-deployment:
+  BP-application-CI:
+    runs-on: ubuntu-22.04
 
-    runs-on: windows-2022
-    
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
-
-        - name: actions/setup-dotnet
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: '9.0.x'
-        
-        
-        - name: Run with custom shell
-          run: dir
-          shell: bash
-
             
-        - name: Sonar Scan
-          uses: sonarsource/sonarqube-scan-action@master
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          with:
-            projectBaseDir: 'BPCalculator'
-            args: >
-              -Dsonar.projectKey=CA1_bloodpressurecalculator
-              -Dsonar.verbose=true
-              -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.organization=ca1
-              -Dsonar.projectVersion=1.0
-              -Dsonar.host.url=https://sonarcloud.io
-              -Dsonar.branch.target=${{ github.ref_name }}
-        # - name: Release Build
+        # - name: Sonar Scan
+        #   uses: sonarsource/sonarqube-scan-action@master
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #   with:
+        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
+        #     args: >
+        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
+        #       -Dsonar.verbose=true
+        #       -Dsonar.sourceEncoding=UTF-8
+        #       -Dsonar.organization=ca1
+        #       -Dsonar.projectVersion=1.0
+        #       -Dsonar.host.url=https://sonarcloud.io
+        #       -Dsonar.branches=$BRANCH 
+
+        # - name: Sourcing Variables for Branch Tagging
+        #   id: Sourcing-Variables
         #   run: |
-        #     dotnet build --configuration Release
-        #     dotnet publish --configuration Release --output ./publish
+        #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+        # - name: Set up QEMU
+        #   uses: docker/setup-qemu-action@v3
+
+        # - name: Set up Docker Buildx
+        #   uses: docker/setup-buildx-action@v3
+
+        # - name: Cache Docker layers
+        #   if: true
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: /tmp/.buildx-cache
+        #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+        #     restore-keys: |
+        #       ${{ runner.os }}-buildx-
+
+        - name: Docker Login to Azure Container Registry
+          uses: docker/login-action@v3.0.0
+          with:
+            registry: tudublinca.azurecr.io
+            username: tudublinca  # Logging through service account.
+            password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
+
+        # - name: Build Docker image
+        #   uses: docker/build-push-action@v5
+        #   with:
+        #     context: .
+        #   #  push: true
+        #     platforms: linux/amd64,linux/arm64
+        #     cache-from: type=local,src=/tmp/.buildx-cache
+        #     cache-to: type=local,dest=/tmp/.buildx-cache
+        #     file: ./Dockerfile
+        #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+        
+        # - name: Docker Image Build and Push
+        #   run: |
+        #     docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+        #     docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        #     docker images
 
 
+        # - name: Run Trivy vulnerability scanner
+        #   uses: aquasecurity/trivy-action@0.28.0
+        #   with:
+        #     image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+        #     format: 'table'
+        #   #  exit-code: '1'
+        #     ignore-unfixed: true
+        #     vuln-type: 'os,library'
+        #     severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+      
         #Additional steps of the code comes here
 
-        # - name: set variable allocation
-        #   shell: pwsh
-        #   run: |
-        #     if ($env:GITHUB_REF -eq 'refs/heads/dev') {
-        #       echo "WEBAPP=$env:DEV_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_DEV" >> $GITHUB_ENV
-        #     } elseif ($env:GITHUB_REF -eq 'refs/heads/test') {
-        #       echo "WEBAPP=$env:TEST_ENV" >> $env:GITHUB_ENV
-        #       echo "WEBAPP_SECRET=$secrets.WEB_SECRET_TEST" >> $GITHUB_ENV
-        #     }
+        
 
+  BP-application-CD-Non-Production:
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04  
+    
+    steps:
 
-        # - name: Deploy to Azure Web App
-        #   uses: azure/webapps-deploy@v2
-        #   with:
-        #     app-name: ${{ env.WEBAPP }} 
-        #     publish-profile: ${{ secrets.WEB_SECRET_DEV }}
-        #     package: ./publish
+    # - name: Azure login
+    #   uses: azure/login@v2
+    #   with:
+    #     auth-type: IDENTITY
+    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      #  enable-AzPSSession: true  
+
+    - name: Populating variables For Non Production Environments
+      run: |
+        if [ "$BRANCH" = "dev" ]; then
+          WEBAPP="${{ env.DEV_ENV }}"
+          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}"
+        elif [ "$BRANCH" = "test" ]; then
+          WEBAPP="${{ env.TEST_ENV }}"
+          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}"
+        fi
+
+    - name: Deploy to Azure Web App for Container
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.WEBAPP }}
+        publish-profile: ${{ env.PUBLSIH_PROFILE }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+  BP-application-CD-Production:
+    if: ${{ always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage') }}
+    environment: 'prod'
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Populating variables For Non Production Environments
+      run: |
+        if [ "$BRANCH" = "main" ]; then
+          WEBAPP="${{ env.PROD_ENV }}"
+        elif [ "$BRANCH" = "stage" ]; then
+          WEBAPP="${{ env.STAGE_ENV }}"
+        fi
+
+  
