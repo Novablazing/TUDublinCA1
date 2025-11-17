@@ -119,19 +119,14 @@ jobs:
       #  enable-AzPSSession: true  
 
     - name: Populating variables For Non Production Environments
-      env:
-        BRANCH: ${{ github.ref_name }}
       run: |
-        if [ "$BRANCH" = "dev" ]; then
+        if [ "$BRANCH" == "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}" 
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
-        elif [ "$BRANCH" = "test" ]; then
+        elif [ "$BRANCH" == "test" ]; then
           WEBAPP="${{ env.TEST_ENV }}"
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         fi
-
-        echo "WEBAPP=$WEBAPP" >> $GITHUB_ENV
-        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE" >> $GITHUB_ENV
         
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
