@@ -13,6 +13,8 @@ on:
 
 env:
   BRANCH: ${{ github.ref_name }}
+  PUBLISH_PROFILE_DEV: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+  PUBLISH_PROFILE_TEST: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod
   TEST_ENV: test-nonprod
@@ -120,17 +122,17 @@ jobs:
       run: |
         if [ "$BRANCH" = "dev" ]; then
           WEBAPP="${{ env.DEV_ENV }}"
-          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}"
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}"
         elif [ "$BRANCH" = "test" ]; then
           WEBAPP="${{ env.TEST_ENV }}"
-          PUBLSIH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}"
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         fi
 
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.WEBAPP }}
-        publish-profile: ${{ env.PUBLSIH_PROFILE }}
+        publish-profile: ${{ env.PUBLISH_PROFILE }}
         images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
@@ -148,4 +150,14 @@ jobs:
           WEBAPP="${{ env.STAGE_ENV }}"
         fi
 
-  
+  Post-Deployment-Tests:
+    needs: 
+      - BP-application-CD-Non-Production
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Post Deployment Tests
+        run: |
+          echo "Running post deployment tests..."
+          # Add your test commands here
+          echo "Post deployment tests completed."
