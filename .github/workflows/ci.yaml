@@ -118,24 +118,25 @@ jobs:
     #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       #  enable-AzPSSession: true  
 
-    # - name: Populating variables For Non Production Environments
-    #   env:
-    #     BRANCH: ${{ github.ref_name }}
-    #   run: |
-    #     if [ "$BRANCH" = "dev" ]; then                                                     
-    #       WEBAPP="${{ env.DEV_ENV }}" 
-    #       PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
-    #     else 
-    #       WEBAPP="${{ env.TEST_ENV }}"
-    #       PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
-    #     fi
-        
-    # - name: Deploy to Azure Web App for Container
-    #   uses: azure/webapps-deploy@v3
-    #   with:
-    #     app-name: ${{ env.WEBAPP }}
-    #     publish-profile: ${{ env.PUBLISH_PROFILE }}
-    #     images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+    - name: Populating variables For Non Production Environments
+      env:
+        BRANCH: ${{ github.ref_name }}
+      run: |
+        if [ "$BRANCH" = "dev" ]; then                                                     
+          WEBAPP="${{ env.DEV_ENV }}" 
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
+        else 
+          WEBAPP="${{ env.TEST_ENV }}"
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
+        fi
+      continue-on-error: true
+
+    - name: Deploy to Azure Web App for Container
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.WEBAPP }}
+        publish-profile: ${{ env.PUBLISH_PROFILE }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
