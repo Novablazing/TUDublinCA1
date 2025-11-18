@@ -125,9 +125,11 @@ jobs:
         if [ "$BRANCH" = "dev" ]; then                                                     
           WEBAPP="${{ env.DEV_ENV }}" 
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
-        else 
+        elif [ "$BRANCH" = "test" ]; then 
           WEBAPP="${{ env.TEST_ENV }}"
           PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
+        else
+          echo "No deployment for this branch"
         fi
       continue-on-error: true
 
