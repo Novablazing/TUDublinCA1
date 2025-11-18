@@ -132,12 +132,12 @@ jobs:
           echo "No deployment for this branch"
         fi
 
-    # - name: Deploy to Azure Web App for Container
-    #   uses: azure/webapps-deploy@v3
-    #   with:
-    #     app-name: ${{ env.WEBAPP }}
-    #     publish-profile: ${{ env.PUBLISH_PROFILE }}
-    #     images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+    - name: Deploy to Azure Web App for Container
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.WEBAPP }}
+        publish-profile: ${{ env.PUBLISH_PROFILE }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
