@@ -12,8 +12,7 @@ namespace BPCalculator.Tests
 
             Assert.Equal(BPCategory.Ideal, bp.Category);
             Assert.Equal("Ideal Blood Pressure", bp.CategoryDisplayName);
-            Assert.Equal(93.3, bp.MeanArterialPressure); // (119 + 2*79) / 3 = 277/3 = 92.333... -> 92.3 (wait check calculation)
-            // Correction: (119 + 2*79) = 119 + 158 = 277 -> 277/3 = 92.333... -> 92.3
+            Assert.Equal(92.3, bp.MeanArterialPressure); // (119 + 2*79) / 3 = 277/3 = 92.333... -> 92.3
         }
 
         [Fact]
