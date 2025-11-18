@@ -119,12 +119,15 @@ jobs:
       #  enable-AzPSSession: true  
 
     - name: Populating variables For Non Production Environments
-      shell: bash
       run: |
         if [ "$BRANCH" = "dev" ]; then                                                     
-          WEBAPP="${{ env.DEV_ENV }}" && PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" 
+          WEBAPP="${{ env.DEV_ENV }}"
+        elif [ "$BRANCH" = "dev" ]; then                                                     
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}"
         elif [ "$BRANCH" = "test" ]; then 
           WEBAPP="${{ env.TEST_ENV }}"
+        elif [ "$BRANCH" = "test" ]; then 
+          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}"
         else
           echo "No deployment for this branch"
         fi
