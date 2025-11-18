@@ -160,7 +160,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Post Deployment Tests
-        run: |
-          echo "Running post deployment tests..."
-          
+    - name: Pull Docker image for ZAP
+      run: docker pull zaproxy/zap-weekly
+
+    - name: Run baseline scan
+      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod.azurewebsites.net/ -I -r zapreport.html
