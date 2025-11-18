@@ -123,10 +123,8 @@ jobs:
       run: |
         if [ "$BRANCH" = "dev" ]; then                                                     
           WEBAPP="${{ env.DEV_ENV }}" >> $GITHUB_ENV
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_DEV }}" >> $GITHUB_ENV
         elif [ "$BRANCH" = "test" ]; then 
           WEBAPP="${{ env.TEST_ENV }}" >> $GITHUB_ENV
-          PUBLISH_PROFILE="${{ env.PUBLISH_PROFILE_TEST }}" >> $GITHUB_ENV
         else
           echo "No deployment for this branch"
         fi
