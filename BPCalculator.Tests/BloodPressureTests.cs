@@ -25,9 +25,10 @@ namespace BPCalculator.Tests
             Assert.Equal(92.7, bp.MeanArterialPressure); // (120 + 2*79) = 278 / 3 = 92.666... -> 92.7
             Assert.Contains("120/79 mmHg - Pre-High Blood Pressure - MAP: 92.7 mmHg", bp.ToString());
             Assert.False(bp.IsHypertensiveCrisis);
+            // Normalize any en-dash to ASCII hyphen to avoid cross-platform encoding differences
             Assert.Equal(
-                "Borderline high. Reduce salt, exercise regularly, manage stress, and recheck in 1–2 weeks.",
-                bp.Recommendation);
+                "Borderline high. Reduce salt, exercise regularly, manage stress, and recheck in 1-2 weeks.",
+                bp.Recommendation.Replace('\u2013', '-'));
         }
 
         [Fact]
