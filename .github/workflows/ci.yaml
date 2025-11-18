@@ -129,6 +129,9 @@ jobs:
           echo "No deployment for this branch"
         fi
 
+        echo "WEBAPP=$WEBAPP" | tee -a $GITHUB_ENV
+        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE" | tee -a $GITHUB_ENV
+
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
       with:
