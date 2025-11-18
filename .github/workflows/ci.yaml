@@ -37,20 +37,20 @@ jobs:
         # - name: Run unit tests
         #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
             
-        - name: Sonar Scan
-          uses: sonarsource/sonarqube-scan-action@master
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          with:
-            projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
-            args: >
-              -Dsonar.projectKey=CA1_bloodpressurecalculator
-              -Dsonar.verbose=true
-              -Dsonar.sourceEncoding=UTF-8
-              -Dsonar.organization=ca1
-              -Dsonar.projectVersion=1.0
-              -Dsonar.host.url=https://sonarcloud.io
-              -Dsonar.branches=$BRANCH 
+        # - name: Sonar Scan
+        #   uses: sonarsource/sonarqube-scan-action@master
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #   with:
+        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
+        #     args: >
+        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
+        #       -Dsonar.verbose=true
+        #       -Dsonar.sourceEncoding=UTF-8
+        #       -Dsonar.organization=ca1
+        #       -Dsonar.projectVersion=1.0
+        #       -Dsonar.host.url=https://sonarcloud.io
+        #       -Dsonar.branches=$BRANCH 
 
         # - name: Sourcing Variables for Branch Tagging
         #   id: Sourcing-Variables
