@@ -6,18 +6,17 @@ on:
     branches:
      # - main
       - dev
-      - test
-     # - stage
+      - qa
     paths-ignore:
       - '.github/workflows/**'
 
 env:
   BRANCH: ${{ github.ref_name }}
 #  PUBLISH_PROFILE_DEV: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-#  PUBLISH_PROFILE_TEST: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}
+#  PUBLISH_PROFILE_QA: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod
-  TEST_ENV: test-nonprod
+  QA_ENV: test-nonprod
 
 jobs:
   BP-application-CI:
@@ -111,7 +110,7 @@ jobs:
         
 
   BP-application-CD-Non-Production:
-    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
     needs: BP-application-CI
     runs-on: ubuntu-22.04  
     
@@ -132,10 +131,10 @@ jobs:
           WEBAPP="${{ env.DEV_ENV }}"
         elif [ "$BRANCH" = "dev" ]; then                                                     
           PUBLISH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}"
-        elif [ "$BRANCH" = "test" ]; then 
-          WEBAPP="${{ env.TEST_ENV }}"
-        elif [ "$BRANCH" = "test" ]; then 
-          PUBLISH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}"
+        elif [ "$BRANCH" = "qa" ]; then 
+          WEBAPP="${{ env.QA_ENV }}"
+        elif [ "$BRANCH" = "qa" ]; then 
+          PUBLISH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}"
         else
           echo "No deployment for this branch"
         fi
