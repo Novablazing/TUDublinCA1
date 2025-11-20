@@ -179,6 +179,9 @@ jobs:
     steps:
     - name: Pull Docker image for ZAP
       run: docker pull zaproxy/zap-weekly
-
+    
+    - name: Pull Docker image for k6
+      run: docker pull grafana/k6
+      
     - name: Run baseline scan
       run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod.azurewebsites.net/ -I -r zapreport.html
