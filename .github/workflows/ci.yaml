@@ -180,23 +180,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        path: ./k6
 
-    - name: Pull Docker image for ZAP
-      run: docker pull zaproxy/zap-weekly
+    # - name: Pull Docker image for ZAP
+    #   run: docker pull zaproxy/zap-weekly
     
     - name: Pull Docker image for k6
       run: docker pull grafana/k6
       
-    - name: Run baseline scan on dev environment
-      if: github.ref == 'refs/heads/dev'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+    # - name: Run baseline scan on dev environment
+    #   if: github.ref == 'refs/heads/dev'
+    #   run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
 
-    - name: Run baseline scan test on qa environment
-      if: github.ref == 'refs/heads/qa'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+    # - name: Run baseline scan test on qa environment
+    #   if: github.ref == 'refs/heads/qa'
+    #   run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+    - name: shell check
+      run: ls
 
     - name: Run k6 load test, capture report
       run: docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
