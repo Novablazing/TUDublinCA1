@@ -109,22 +109,22 @@ jobs:
         #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        # - name: Docker Image Build and Push
-        #   run: |
-        #     docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
-        #     docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
-        #     docker images
+        - name: Docker Image Build and Push
+          run: |
+            docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+            docker images
 
 
-        # - name: Run Trivy vulnerability scanner
-        #   uses: aquasecurity/trivy-action@0.28.0
-        #   with:
-        #     image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
-        #     format: 'table'
-        #   #  exit-code: '1'
-        #     ignore-unfixed: true
-        #     vuln-type: 'os,library'
-        #     severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+        - name: Run Trivy vulnerability scanner
+          uses: aquasecurity/trivy-action@0.28.0
+          with:
+            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+            format: 'table'
+          #  exit-code: '1'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
         
 
   BP-application-CD-dev-Non-Production:
