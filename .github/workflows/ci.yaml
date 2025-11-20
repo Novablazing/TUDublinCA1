@@ -172,7 +172,8 @@ jobs:
 
   Post-Deployment-Tests:
     needs: 
-      - BP-application-CD-Non-Production
+      - BP-application-CD-dev-Non-Production
+      - BP-application-CD-QA-Non-Production
     runs-on: ubuntu-22.04
 
     steps:
