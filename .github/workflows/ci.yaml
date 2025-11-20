@@ -47,8 +47,10 @@ jobs:
         - name: Run unit tests
           run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
         
-        - name: Install Sonar Scanner
-          run: dotnet tool install --global dotnet-sonarscanner
+        - name: Sonar Scanner End Analysis
+          run: |
+            dotnet sonarscanner end \
+              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
         
           
