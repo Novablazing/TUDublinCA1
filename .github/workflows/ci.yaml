@@ -171,6 +171,7 @@ jobs:
         fi
 
   Post-Deployment-Tests:
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
     needs: 
     #  - BP-application-CD-dev-Non-Production
       - BP-application-CD-QA-Non-Production
