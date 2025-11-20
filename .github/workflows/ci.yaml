@@ -16,7 +16,7 @@ env:
 #  PUBLISH_PROFILE_QA: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod01
-  QA_ENV: test-nonprod
+  QA_ENV: qa-nonprod01
 
 jobs:
   BP-application-CI:
@@ -136,7 +136,7 @@ jobs:
     - name: Deploy to Azure Web App for Container for dev environment
       uses: azure/webapps-deploy@v3
       with:
-        app-name: dev-nonprod01
+        app-name: ${{ env.DEV_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
         images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
@@ -150,7 +150,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.QA_ENV }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
         images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
