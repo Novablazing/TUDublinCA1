@@ -127,46 +127,31 @@ jobs:
         #     severity: 'CRITICAL,HIGH,MEDIUM,LOW'
         
 
-  BP-application-CD-Non-Production:
-    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
+  BP-application-CD-dev-Non-Production:
+    if: ${{ always() && github.ref == 'refs/heads/dev' }}
     needs: BP-application-CI
     runs-on: ubuntu-22.04  
     
     steps:
-
-    # - name: Azure login
-    #   uses: azure/login@v2
-    #   with:
-    #     auth-type: IDENTITY
-    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #  enable-AzPSSession: true  
-
-    - name: Populating variables For Non Production Environments
-      run: |
-        if [ "$BRANCH" = "dev" ]; then                                                     
-          WEBAPP="${{ env.DEV_ENV }}"
-        elif [ "$BRANCH" = "dev" ]; then                                                     
-          PUBLISH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}"
-        elif [ "$BRANCH" = "qa" ]; then 
-          WEBAPP="${{ env.QA_ENV }}"
-        elif [ "$BRANCH" = "qa" ]; then 
-          PUBLISH_PROFILE="${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}"
-        else
-          echo "No deployment for this branch"
-        fi
-
-        echo "WEBAPP=$WEBAPP" | tee -a $GITHUB_ENV
-        echo "PUBLISH_PROFILE=$PUBLISH_PROFILE" | tee -a $GITHUB_ENV
-
     - name: Deploy to Azure Web App for Container
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ env.WEBAPP }}
-        publish-profile: ${{ env.PUBLISH_PROFILE }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:89
-      #  images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        app-name: ${{ env.DEV_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+  BP-application-CD-QA-Non-Production:
+    if: ${{ always() && github.ref == 'refs/heads/qa' }}
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04  
+    
+    steps:
+    - name: Deploy to Azure Web App for Container
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.QA_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-Production:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
