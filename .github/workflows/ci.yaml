@@ -30,12 +30,6 @@ jobs:
           uses: actions/setup-dotnet@v4
           with:
             dotnet-version: '9.0.x'
-
-        - name: Release Build
-          run: dotnet build --configuration Release
-
-        - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
         
         - name: Install Sonar Scanner
           run: dotnet tool install --global dotnet-sonarscanner
@@ -46,6 +40,17 @@ jobs:
               /o:"ca1" \
               /k:"BPCalculatorCA1" \
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+
+        - name: Release Build
+          run: dotnet build --configuration Release
+
+        - name: Run unit tests
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
+        
+        - name: Install Sonar Scanner
+          run: dotnet tool install --global dotnet-sonarscanner
+
+        
           
             
         # - name: Sonar Scan
