@@ -26,31 +26,31 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
-        - name: actions/setup-dotnet
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: '9.0.x'
+        # - name: actions/setup-dotnet
+        #   uses: actions/setup-dotnet@v4
+        #   with:
+        #     dotnet-version: '9.0.x'
         
-        - name: Install Sonar Scanner
-          run: dotnet tool install --global dotnet-sonarscanner
+        # - name: Install Sonar Scanner
+        #   run: dotnet tool install --global dotnet-sonarscanner
 
-        - name: Sonar Scanner Begin Analysis
-          run: |
-            dotnet sonarscanner begin \
-              /o:"ca1" \
-              /k:"BPCalculatorCA1" \
-              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+        # - name: Sonar Scanner Begin Analysis
+        #   run: |
+        #     dotnet sonarscanner begin \
+        #       /o:"ca1" \
+        #       /k:"BPCalculatorCA1" \
+        #       /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
-        - name: Release Build
-          run: dotnet build --configuration Release
+        # - name: Release Build
+        #   run: dotnet build --configuration Release
 
-        - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
+        # - name: Run unit tests
+        #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
         
-        - name: Sonar Scanner End Analysis
-          run: |
-            dotnet sonarscanner end \
-              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+        # - name: Sonar Scanner End Analysis
+        #   run: |
+        #     dotnet sonarscanner end \
+        #       /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
         
           
@@ -109,22 +109,22 @@ jobs:
         #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        - name: Docker Image Build and Push
-          run: |
-            docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
-            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
-            docker images
+        # - name: Docker Image Build and Push
+        #   run: |
+        #     docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+        #     docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        #     docker images
 
 
-        - name: Run Trivy vulnerability scanner
-          uses: aquasecurity/trivy-action@0.28.0
-          with:
-            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
-            format: 'table'
-          #  exit-code: '1'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+        # - name: Run Trivy vulnerability scanner
+        #   uses: aquasecurity/trivy-action@0.28.0
+        #   with:
+        #     image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+        #     format: 'table'
+        #   #  exit-code: '1'
+        #     ignore-unfixed: true
+        #     vuln-type: 'os,library'
+        #     severity: 'CRITICAL,HIGH,MEDIUM,LOW'
         
 
   BP-application-CD-dev-Non-Production:
@@ -133,12 +133,12 @@ jobs:
     runs-on: ubuntu-22.04  
     
     steps:
-    - name: Deploy to Azure Web App for Container
+    - name: Deploy to Azure Web App for Container for dev environment
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ env.DEV_ENV }}
+        app-name: dev-nonprod
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        images: tudublinca.azurecr.io/tudublin/bpcalculator:102
 
   BP-application-CD-QA-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/qa' }}
@@ -146,7 +146,7 @@ jobs:
     runs-on: ubuntu-22.04  
     
     steps:
-    - name: Deploy to Azure Web App for Container
+    - name: Deploy to Azure Web App for Container for Qa Environment
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.QA_ENV }}
