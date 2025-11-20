@@ -1,12 +1,11 @@
-
 import { browser } from 'k6/browser';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 // ---------------- Configuration ----------------
-const BASE_URL  = __ENV.BASE_URL  || 'https://dev-nonprod01.azurewebsites.net'; // set to your host
-const CALC_PATH = __ENV.CALC_PATH || '/';        // path for the calculator page
-const POST_PATH = __ENV.POST_PATH || CALC_PATH;  // form's post target (often identical)
+const BASE_URL  = __ENV.BASE_URL  || 'https://dev-nonprod01.azurewebsites.net'; // <- set your host
+const CALC_PATH = __ENV.CALC_PATH || '/';        // page that renders the calculator form
+const POST_PATH = __ENV.POST_PATH || CALC_PATH;  // form action; override if different
 
 const SBP = Number(__ENV.SBP || 100);
 const DBP = Number(__ENV.DBP || 60);
@@ -21,7 +20,6 @@ const EXPECTED_MAP_1DP = (Math.round(EXPECTED_MAP * 10) / 10).toFixed(1);
 // ---------------- Scenarios ----------------
 export const options = {
   scenarios: {
-    // UI/E2E using real Chromium via k6/browser
     ui: {
       executor: 'shared-iterations',
       exec: 'uiScenario',
@@ -29,8 +27,6 @@ export const options = {
       iterations: 1,
       options: { browser: { type: 'chromium' } },
     },
-
-    // Protocol-level (HTTP) load
     api: {
       executor: 'per-vu-iterations',
       exec: 'apiScenario',
@@ -52,7 +48,7 @@ export async function uiScenario() {
   try {
     await page.goto(`${BASE_URL}${CALC_PATH}`, { waitUntil: 'networkidle' });
 
-    // Try common IDs/names first; adjust if your markup differs
+    // Adjust selectors if your markup differs
     const systolicInput  = page.locator('input#Systolic, input[name="Systolic"]');
     const diastolicInput = page.locator('input#Diastolic, input[name="Diastolic"]');
     const submitButton   = page.locator('button:has-text("Submit"), input[type="submit"]');
@@ -61,9 +57,9 @@ export async function uiScenario() {
     await diastolicInput.fill(String(DBP));
     await submitButton.click();
 
-    // Wait for the calculation to complete and the UI to settle
+    // Let the UI finish rendering
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(300); // small buffer for UI rendering
+    await page.waitForTimeout(300);
 
     const html = await page.content();
 
@@ -79,3 +75,38 @@ export async function uiScenario() {
   sleep(1);
 }
 
+// ---------------- Scenario 2: Protocol (HTTP) ----------------
+export function apiScenario() {
+  // 1) GET form page to obtain Anti-Forgery cookie + hidden token
+  const getRes = http.get(`${BASE_URL}${CALC_PATH}`);
+  check(getRes, { 'GET form page 200': (r) => r.status === 200 });
+
+  // Extract hidden __RequestVerificationToken from HTML (supports ' and ")
+  const tokenRegex = /<input[^>]*name=["']__RequestVerificationToken["'][^>]*value=["']([^"']+)["']/i;
+  const match = getRes.body.match(tokenRegex);
+  const antiToken = match ? match[1] : null;
+
+  check(antiToken, { 'Anti-Forgery token found': (t) => !!t });
+
+  // 2) POST the form — passing a plain object => auto x-www-form-urlencoded
+  const form = {
+    '__RequestVerificationToken': antiToken,
+    'Systolic':  String(SBP),
+    'Diastolic': String(DBP),
+  };
+
+  const postRes = http.post(`${BASE_URL}${POST_PATH}`, form);
+  check(postRes, {
+    'POST is OK or Redirect': (r) => r && [200, 302].includes(r.status),
+  });
+
+  // After redirect (k6 follows by default), validate content
+  const body = postRes.body || '';
+  check(body, {
+    'Body: Category present':               (b) => b.includes('Category'),
+    'Body: MAP label present':              (b) => b.includes('Mean Arterial Pressure'),
+    [`Body: MAP shows ${EXPECTED_MAP_1DP}`]: (b) => b.includes(EXPECTED_MAP_1DP),
+  });
+
+  sleep(1);
+}
