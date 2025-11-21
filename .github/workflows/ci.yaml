@@ -199,5 +199,16 @@ jobs:
     - name: Run k6 load test, capture report
       run: docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
 
+    - name: Upload Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: Security-and-Load-Test-Reports
+        path: |
+          /report/zapreport.html
+          k6report.txt
+
     - name: shell check
-      run: ls
+      run: |
+        ls
+        cd..
+        ls
