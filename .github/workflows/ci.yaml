@@ -51,7 +51,7 @@ jobs:
         
         - name: Sonar Scanner End Analysis
           run: |
-            dotnet sonarscanner end \
+            dotnet sonarscanner end `
               /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
         
