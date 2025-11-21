@@ -48,7 +48,7 @@ jobs:
           run: dotnet build --configuration Release --no-incremental
 
         - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
+          run: dotnet test BPCalculator.sln --collect "Code coverage" 
         
         - name: Sonar Scanner End Analysis
           run: |
