@@ -31,10 +31,10 @@ jobs:
           with:
             dotnet-version: '9.0.x'
         
-        - name: Install Sonar Scanner
-          run: |
-            dotnet tool install --global dotnet-sonarscanner
-            dotnet tool install --global dotnet-coverage
+        # - name: Install Sonar Scanner
+        #   run: |
+        #     dotnet tool install --global dotnet-sonarscanner
+        #     dotnet tool install --global dotnet-coverage
 
         - name: Sonar Scanner Begin Analysis
           run: |
@@ -50,6 +50,10 @@ jobs:
         - name: Run unit tests
           run: dotnet test BPCalculator.sln --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover --collect "Code coverage"
         
+        - name: Run BDD tests
+          run: dotnet test SpecFlowTests/SpecFlowTests.csproj
+
+
         - name: Release Build
           run: |
             cd /BPCalculator.Test
