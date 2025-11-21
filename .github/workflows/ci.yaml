@@ -48,7 +48,7 @@ jobs:
           run: dotnet build --configuration Release --no-incremental
 
         - name: Run unit tests
-          run: dotnet test BPCalculator.sln /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=coverage.xml --collect "Code coverage"
+          run: dotnet test BPCalculator.sln --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover --collect "Code coverage"
         
         - name: Sonar Scanner End Analysis
           run: |
