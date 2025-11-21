@@ -50,6 +50,9 @@ jobs:
         - name: Run unit tests
           run: dotnet test BPCalculator.sln --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover --collect "Code coverage"
         
+        - name: Release Build
+          run: dir
+
         - name: Sonar Scanner End Analysis
           run: |
             dotnet sonarscanner end `
