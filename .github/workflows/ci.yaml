@@ -38,9 +38,9 @@ jobs:
 
         - name: Sonar Scanner Begin Analysis
           run: |
-            dotnet sonarscanner begin \
-              /o:"ca1" \
-              /k:"BPCalculatorCA1" \
+            dotnet sonarscanner begin `
+              /o:"ca1" `
+              /k:"BPCalculatorCA1" `
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
         - name: Release Build
