@@ -52,7 +52,7 @@ jobs:
         
         - name: Release Build
           run: |
-            cd BPCalculator.Test
+            cd /BPCalculator.Test
             dir
 
         # - name: Sonar Scanner End Analysis
