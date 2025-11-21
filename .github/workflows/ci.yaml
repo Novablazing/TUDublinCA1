@@ -189,7 +189,7 @@ jobs:
       
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r ${{ github.workspace }}/zapreport.html
+      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
 
     - name: Run baseline scan test on qa environment
       if: github.ref == 'refs/heads/qa'
@@ -199,10 +199,10 @@ jobs:
     - name: Run k6 load test, capture report
       run: docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
 
-    - name: shell check
+    - name: organize Reports
       run: |
-        ls -al
-    
+        mv /report/zapreport.html ${{ github.workspace }}/zapreport.html
+        ls -al  
       # - name: Upload Reports
       # uses: actions/upload-artifact@v4
       # with:
