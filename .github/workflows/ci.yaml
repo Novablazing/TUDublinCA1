@@ -209,7 +209,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: K6 Report
-        path: K6report.txt
+        path: ${{ github.workspace }}/k6report.txt
 
     # - name: shell check
     #   run: |
