@@ -19,12 +19,12 @@ env:
   QA_ENV: qa-nonprod01
 
 jobs:
-  BP-application-CI:
-    runs-on: ubuntu-22.04
+  # BP-application-CI:
+  #   runs-on: ubuntu-22.04
 
-    steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
+  #   steps:
+  #       - name: Checkout code
+  #         uses: actions/checkout@v3
 
         # - name: actions/setup-dotnet
         #   uses: actions/setup-dotnet@v4
@@ -90,12 +90,12 @@ jobs:
         #     restore-keys: |
         #       ${{ runner.os }}-buildx-
 
-        - name: Docker Login to Azure Container Registry
-          uses: docker/login-action@v3.0.0
-          with:
-            registry: tudublinca.azurecr.io
-            username: tudublinca  # Logging through service account.
-            password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
+        # - name: Docker Login to Azure Container Registry
+        #   uses: docker/login-action@v3.0.0
+        #   with:
+        #     registry: tudublinca.azurecr.io
+        #     username: tudublinca  # Logging through service account.
+        #     password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
 
         # - name: Build Docker image
         #   uses: docker/build-push-action@v5
@@ -140,41 +140,41 @@ jobs:
   #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
   #       images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
-  BP-application-CD-QA-Non-Production:
-    if: ${{ always() && github.ref == 'refs/heads/qa' }}
-    needs: BP-application-CI
-    runs-on: ubuntu-22.04  
+  # BP-application-CD-QA-Non-Production:
+  #   if: ${{ always() && github.ref == 'refs/heads/qa' }}
+  #   needs: BP-application-CI
+  #   runs-on: ubuntu-22.04  
     
-    steps:
-    - name: Deploy to Azure Web App for Container for Qa Environment
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ env.QA_ENV }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+  #   steps:
+  #   - name: Deploy to Azure Web App for Container for Qa Environment
+  #     uses: azure/webapps-deploy@v3
+  #     with:
+  #       app-name: ${{ env.QA_ENV }}
+  #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
+  #       images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
-  BP-application-CD-Production:
-    if: ${{ always() && github.ref == 'refs/heads/main' }}
-    environment: 'prod'
-    needs: BP-application-CI
-    runs-on: ubuntu-22.04
+  # BP-application-CD-Production:
+  #   if: ${{ always() && github.ref == 'refs/heads/main' }}
+  #   environment: 'prod'
+  #   needs: BP-application-CI
+  #   runs-on: ubuntu-22.04
 
-    steps:
-    - name: Populating variables For Non Production Environments
-      env:
-        BRANCH: ${{ github.ref_name }}
-      run: |
-        if [ "$BRANCH" = "main" ]; then
-          WEBAPP="${{ env.PROD_ENV }}"
-        elif [ "$BRANCH" = "stage" ]; then
-          WEBAPP="${{ env.STAGE_ENV }}"
-        fi
+  #   steps:
+  #   - name: Populating variables For Non Production Environments
+  #     env:
+  #       BRANCH: ${{ github.ref_name }}
+  #     run: |
+  #       if [ "$BRANCH" = "main" ]; then
+  #         WEBAPP="${{ env.PROD_ENV }}"
+  #       elif [ "$BRANCH" = "stage" ]; then
+  #         WEBAPP="${{ env.STAGE_ENV }}"
+  #       fi
 
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
-    needs: 
-    #  - BP-application-CD-dev-Non-Production
-      - BP-application-CD-QA-Non-Production
+    # needs: 
+    # #  - BP-application-CD-dev-Non-Production
+    #   - BP-application-CD-QA-Non-Production
     runs-on: ubuntu-22.04
 
     steps:
@@ -199,14 +199,18 @@ jobs:
     - name: Run k6 load test, capture report
       run: docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
 
-    - name: Upload Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: Security-and-Load-Test-Reports
-        path: |
-          /zapreport/zapreport.html
-          /TUDublinCA1/TUDublinCA1/k6report.txt
-
     - name: shell check
       run: |
-        pwd
+        ls -al
+    
+      # - name: Upload Reports
+      # uses: actions/upload-artifact@v4
+      # with:
+      #   name: Security-and-Load-Test-Reports
+      #   path: |
+      #     /report/zapreport.html
+      #     /TUDublinCA1/TUDublinCA1/k6report.txt
+
+    # - name: shell check
+    #   run: |
+    #      pwd
