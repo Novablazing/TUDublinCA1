@@ -19,38 +19,38 @@ env:
   QA_ENV: qa-nonprod01
 
 jobs:
-  # BP-application-CI:
-  #   runs-on: ubuntu-22.04
+  BP-application-CI:
+    runs-on: windows-2022
 
-  #   steps:
-  #       - name: Checkout code
-  #         uses: actions/checkout@v3
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
 
-        # - name: actions/setup-dotnet
-        #   uses: actions/setup-dotnet@v4
-        #   with:
-        #     dotnet-version: '9.0.x'
+        - name: actions/setup-dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '9.0.x'
         
-        # - name: Install Sonar Scanner
-        #   run: dotnet tool install --global dotnet-sonarscanner
+        - name: Install Sonar Scanner
+          run: dotnet tool install --global dotnet-sonarscanner dotnet-coverage
 
-        # - name: Sonar Scanner Begin Analysis
-        #   run: |
-        #     dotnet sonarscanner begin \
-        #       /o:"ca1" \
-        #       /k:"BPCalculatorCA1" \
-        #       /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+        - name: Sonar Scanner Begin Analysis
+          run: |
+            dotnet sonarscanner begin \
+              /o:"ca1" \
+              /k:"BPCalculatorCA1" \
+              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
-        # - name: Release Build
-        #   run: dotnet build --configuration Release
+        - name: Release Build
+          run: dotnet build --configuration Release
 
-        # - name: Run unit tests
-        #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
+        - name: Run unit tests
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage" 
         
-        # - name: Sonar Scanner End Analysis
-        #   run: |
-        #     dotnet sonarscanner end \
-        #       /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+        - name: Sonar Scanner End Analysis
+          run: |
+            dotnet sonarscanner end \
+              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
         
           
