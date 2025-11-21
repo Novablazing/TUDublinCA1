@@ -209,6 +209,4 @@ jobs:
 
     - name: shell check
       run: |
-        ls
-        cd..
-        ls
+        pwd
