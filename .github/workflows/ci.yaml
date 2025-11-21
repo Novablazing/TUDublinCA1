@@ -204,7 +204,7 @@ jobs:
       with:
         name: Security-and-Load-Test-Reports
         path: |
-          /report/zapreport.html
+          /zapreport/zapreport.html
           k6report.txt
 
     - name: shell check
