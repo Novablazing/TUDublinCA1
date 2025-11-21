@@ -191,9 +191,9 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
 
-    # - name: Run baseline scan test on qa environment
-    #   if: github.ref == 'refs/heads/qa'
-    #   run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+    - name: Run baseline scan test on qa environment
+      if: github.ref == 'refs/heads/qa'
+      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
     
 
     - name: Run k6 load test, capture report
