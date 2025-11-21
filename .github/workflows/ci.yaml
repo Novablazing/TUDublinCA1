@@ -41,7 +41,7 @@ jobs:
             dotnet sonarscanner begin `
               /o:"ca1" `
               /k:"BPCalculatorCA1" `
-              /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+              /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml `
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
         - name: Release Build
