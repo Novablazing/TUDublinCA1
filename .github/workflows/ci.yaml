@@ -189,7 +189,7 @@ jobs:
       
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r ${{ github.workspace }}/zapreport.html
 
     - name: Run baseline scan test on qa environment
       if: github.ref == 'refs/heads/qa'
