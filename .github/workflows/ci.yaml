@@ -205,7 +205,7 @@ jobs:
         name: Security-and-Load-Test-Reports
         path: |
           /zapreport/zapreport.html
-          k6report.txt
+          /TUDublinCA1/TUDublinCA1/k6report.txt
 
     - name: shell check
       run: |
