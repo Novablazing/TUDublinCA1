@@ -53,7 +53,9 @@ jobs:
         #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage"
         
         - name: Run BDD tests
-          run: dotnet test SpecFlowTests/SpecFlowTests.csproj
+          run: |
+            dotnet add package BoDi --version 1.5.2
+            dotnet test SpecFlowTests/SpecFlowTests.csproj --configuration Release
 
 
         # - name: Release Build
