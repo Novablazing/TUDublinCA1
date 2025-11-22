@@ -50,7 +50,7 @@ jobs:
             dotnet build --configuration Release --no-incremental
 
         - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover --collect "Code coverage"
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage"
         
         - name: Run BDD tests
           run: dotnet test SpecFlowTests/SpecFlowTests.csproj
