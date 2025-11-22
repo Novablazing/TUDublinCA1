@@ -45,7 +45,9 @@ jobs:
         #       /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
         - name: Release Build
-          run: dotnet build --configuration Release --no-incremental
+          run: |
+            dotnet restore
+            dotnet build --configuration Release --no-incremental
 
         - name: Run unit tests
           run: dotnet test BPCalculator.sln --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover --collect "Code coverage"
