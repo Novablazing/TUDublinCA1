@@ -46,7 +46,7 @@ jobs:
 
         - name: Release Build
           run: |
-            dotnet restore
+            dotnet restore --force --no-cache
             dotnet build --configuration Release --no-incremental
 
         - name: Run unit tests
@@ -56,10 +56,10 @@ jobs:
           run: dotnet test SpecFlowTests/SpecFlowTests.csproj
 
 
-        - name: Release Build
-          run: |
-            cd /BPCalculator.Test
-            dir
+        # - name: Release Build
+        #   run: |
+        #     cd /BPCalculator.Test
+        #     dir
 
         # - name: Sonar Scanner End Analysis
         #   run: |
