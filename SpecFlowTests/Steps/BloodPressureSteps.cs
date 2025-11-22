@@ -8,7 +8,7 @@ namespace SpecFlowTests.Steps
     [Binding]
     public class BloodPressureSteps
     {
-        private BloodPressure _bp;
+        private BloodPressure? _bp;
 
         [Given(@"a systolic reading of (.*) and diastolic reading of (.*)")]
         public void GivenASystolicReadingOfAndDiastolicReadingOf(int systolic, int diastolic)
@@ -25,7 +25,8 @@ namespace SpecFlowTests.Steps
         [Then("the category should be (.*)")]
         public void ThenTheCategoryShouldBe(string expectedCategory)
         {
-            Assert.Equal(expectedCategory, _bp.Category.ToString());
+            Assert.NotNull(_bp);
+            Assert.Equal(expectedCategory, _bp!.Category.ToString());
         }
     }
 }
