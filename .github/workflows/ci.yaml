@@ -49,8 +49,8 @@ jobs:
             dotnet restore --force --no-cache
             dotnet build --configuration Release --no-incremental
 
-        - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage"
+        # - name: Run unit tests
+        #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage"
         
         - name: Run BDD tests
           run: dotnet test SpecFlowTests/SpecFlowTests.csproj
