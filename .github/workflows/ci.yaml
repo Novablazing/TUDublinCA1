@@ -34,7 +34,7 @@ jobs:
         - name: Install Sonar Scanner
           run: |
             dotnet tool install --global dotnet-sonarscanner
-            dotnet tool install --global coverlet.collector
+          #  dotnet tool install --global coverlet.collector
 
         - name: Release Build
           run: |
