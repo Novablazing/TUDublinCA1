@@ -31,10 +31,10 @@ jobs:
           with:
             dotnet-version: '9.0.x'
         
-        # - name: Install Sonar Scanner
-        #   run: |
-        #     dotnet tool install --global dotnet-sonarscanner
-        #     dotnet tool install --global dotnet-coverage
+        - name: Install Sonar Scanner
+          run: |
+            dotnet tool install --global dotnet-sonarscanner
+            dotnet tool install --global coverlet.collector
 
         - name: Release Build
           run: |
@@ -48,8 +48,9 @@ jobs:
             dotnet sonarscanner begin `
               /o:"ca1" `
               /k:"BPCalculatorCA1" `
-              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests/coverage.xml `
+              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests\coverage.xml `
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+
           # - name: Run BDD tests
         #   run: |
         #     dotnet add package BoDi --version 1.5.2
