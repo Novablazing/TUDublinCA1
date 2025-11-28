@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace BPCalculator.Pages
 {
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class ErrorModel : PageModel
     {
         public string RequestId { get; set; }

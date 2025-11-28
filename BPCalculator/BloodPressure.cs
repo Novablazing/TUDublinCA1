@@ -34,12 +34,11 @@ namespace BPCalculator
             {
                 if (Systolic >= 140 || Diastolic >= 90)
                     return BPCategory.High;
-                else if ((Systolic >= 120 && Systolic <= 139) || (Diastolic >= 80 && Diastolic <= 89))
+                if ((Systolic >= 120 && Systolic <= 139) || (Diastolic >= 80 && Diastolic <= 89))
                     return BPCategory.PreHigh;
-                else if (Systolic < 90 || Diastolic < 60)
+                if (Systolic < 90 || Diastolic < 60)
                     return BPCategory.Low;
-                else if (Systolic < 120 && Diastolic < 80)
-                    return BPCategory.Ideal;
+                
                 return BPCategory.Ideal;
             }
         }
@@ -55,14 +54,14 @@ namespace BPCalculator
         {
             get
             {
-                var member = typeof(BPCategory).GetMember(Category.ToString());
-                if (member != null && member.Length > 0)
+                return Category switch
                 {
-                    var display = member[0].GetCustomAttribute<DisplayAttribute>();
-                    if (display != null && !string.IsNullOrWhiteSpace(display.Name))
-                        return display.Name;
-                }
-                return Category.ToString();
+                    BPCategory.Low => "Low Blood Pressure",
+                    BPCategory.Ideal => "Ideal Blood Pressure",
+                    BPCategory.PreHigh => "Pre-High Blood Pressure",
+                    BPCategory.High => "High Blood Pressure",
+                    _ => Category.ToString()
+                };
             }
         }
 
@@ -70,7 +69,7 @@ namespace BPCalculator
         {
             get
             {
-                string v = Category switch
+                return Category switch
                 {
                     BPCategory.Low =>
                         "Your reading is on the low side. If you feel dizzy or faint, hydrate and consider talking to a clinician.",
@@ -83,7 +82,6 @@ namespace BPCalculator
                     _ =>
                         "Consider rechecking your blood pressure to confirm this result."
                 };
-                return v;
             }
         }
 
