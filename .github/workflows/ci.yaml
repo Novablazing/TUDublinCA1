@@ -36,13 +36,6 @@ jobs:
             dotnet tool install --global dotnet-sonarscanner
           #  dotnet tool install --global coverlet.collector
 
-        - name: Release Build
-          run: |
-            dotnet build --configuration Release --no-incremental
-
-        - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
-        
         - name: Sonar Scanner Begin Analysis
           run: |
             dotnet sonarscanner begin `
@@ -50,6 +43,15 @@ jobs:
               /k:"BPCalculatorCA1" `
               /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests\coverage.xml `
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+
+        - name: Release Build
+          run: |
+            dotnet build --configuration Release --no-incremental
+
+        - name: Run unit tests
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
+        
+        
 
           # - name: Run BDD tests
         #   run: |
