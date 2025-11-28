@@ -36,26 +36,24 @@ jobs:
         #     dotnet tool install --global dotnet-sonarscanner
         #     dotnet tool install --global dotnet-coverage
 
-        # - name: Sonar Scanner Begin Analysis
-        #   run: |
-        #     dotnet sonarscanner begin `
-        #       /o:"ca1" `
-        #       /k:"BPCalculatorCA1" `
-        #       /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml `
-        #       /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+        - name: Sonar Scanner Begin Analysis
+          run: |
+            dotnet sonarscanner begin `
+              /o:"ca1" `
+              /k:"BPCalculatorCA1" `
+              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests/coverage.xml `
+              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
         - name: Release Build
           run: |
-            dotnet restore --force --no-cache
             dotnet build --configuration Release --no-incremental
 
-        # - name: Run unit tests
-        #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj --collect "Code coverage"
-        
-        - name: Run BDD tests
-          run: |
-            dotnet add package BoDi --version 1.5.2
-            dotnet test SpecFlowTests/SpecFlowTests.csproj --configuration Release
+        - name: Run unit tests
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
+        # - name: Run BDD tests
+        #   run: |
+        #     dotnet add package BoDi --version 1.5.2
+        #     dotnet test SpecFlowTests/SpecFlowTests.csproj --configuration Release
 
 
         # - name: Release Build
@@ -63,10 +61,10 @@ jobs:
         #     cd /BPCalculator.Test
         #     dir
 
-        # - name: Sonar Scanner End Analysis
-        #   run: |
-        #     dotnet sonarscanner end `
-        #       /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+        - name: Sonar Scanner End Analysis
+          run: |
+            dotnet sonarscanner end `
+              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
         
           
