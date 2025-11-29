@@ -191,7 +191,7 @@ jobs:
     - name: Selenium test for Dev environment
       if: github.ref == 'refs/heads/dev'
       run: |
-        dotnet test Selenium/seleniumtest.csprojS --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+        dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
       
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
