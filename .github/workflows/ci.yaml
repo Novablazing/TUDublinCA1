@@ -213,7 +213,6 @@ jobs:
         fi
 
     - name: Upload Selenium Test Results
-      if: github.ref == 'refs/heads/dev'
       uses: actions/upload-artifact@v4
       with:
         name: Selenium Test Results
