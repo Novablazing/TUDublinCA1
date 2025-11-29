@@ -198,7 +198,12 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       run: |
         dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
-      
+    
+    - name: Selenium test for Dev environment
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
+
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
       run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
@@ -221,7 +226,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Selenium Test Results
-        path: Selenium/TestResults/seleniumdevtest-results.trx
+        path: Selenium/TestResults/*.trx
 
     - name: Upload Reports
       uses: actions/upload-artifact@v4

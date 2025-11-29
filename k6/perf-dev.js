@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-  vus: 1,
-  iterations: 1,
+  vus: 20,
+  duration: '1m',
 };
 
 export default function () {
@@ -27,5 +27,12 @@ export default function () {
     'Response contains MAP': (r) => r.body.includes('Mean Arterial Pressure'),
   });
 
-  sleep(1);
+  // 3. Simulate user actions
+  sleep(10); // wait for 1 second
+
+  // 4. Additional user actions can be added here
+  // Example: res = http.post(`${BASE_URL}${CALC_PATH}`, payload);
+  // check(res, { 'POST form status is 200': (r) => r.status === 200 });
+  // sleep(1); // wait for 1 second
+  // ...existing code...
 }
