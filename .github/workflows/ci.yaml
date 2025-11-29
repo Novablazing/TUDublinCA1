@@ -20,7 +20,7 @@ env:
 
 jobs:
   BP-application-CI:
-    runs-on: windows-2022
+    runs-on: ubuntu-22.04
 
     steps:
         - name: Checkout code
@@ -113,8 +113,7 @@ jobs:
         
         - name: Docker Image Build and Push
           run: |
-            dir
-            docker build -f ./BPCalculator/Dockerfile -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+            docker build  -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
             docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
             docker images
 
