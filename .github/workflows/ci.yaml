@@ -22,9 +22,9 @@ jobs:
   BP-application-CI:
     runs-on: ubuntu-22.04
 
-  #   steps:
-  #       - name: Checkout code
-  #         uses: actions/checkout@v3
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
 
   #       - name: actions/setup-dotnet
   #         uses: actions/setup-dotnet@v4
