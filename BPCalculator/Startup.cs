@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace BPCalculator
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
