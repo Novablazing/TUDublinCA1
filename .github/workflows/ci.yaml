@@ -199,8 +199,8 @@ jobs:
       run: |
         dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
     
-    - name: Selenium test for Dev environment
-      if: github.ref == 'refs/heads/dev'
+    - name: Selenium test for QA environment
+      if: github.ref == 'refs/heads/qa'
       run: |
         dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
 
