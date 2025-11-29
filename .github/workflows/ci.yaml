@@ -182,15 +182,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Pull Docker image for ZAP
-      run: docker pull zaproxy/zap-weekly
+    # - name: Pull Docker image for ZAP
+    #   run: docker pull zaproxy/zap-weekly
     
-    - name: Pull Docker image for k6
-      run: docker pull grafana/k6
+    # - name: Pull Docker image for k6
+    #   run: docker pull grafana/k6
 
     - name: Selinium test for Dev environment
       if: github.ref == 'refs/heads/dev'
-      run: dotnet test Selenium/SeleniumTests.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+      run: |
+        ls
+        dotnet test Selenium/SeleniumTests.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
       
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
