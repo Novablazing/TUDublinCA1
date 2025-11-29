@@ -188,11 +188,10 @@ jobs:
     # - name: Pull Docker image for k6
     #   run: docker pull grafana/k6
 
-    - name: Selinium test for Dev environment
+    - name: Selenium test for Dev environment
       if: github.ref == 'refs/heads/dev'
       run: |
-        ls
-        dotnet test Selenium/SeleniumTests.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+        dotnet test Selenium/seleniumTests.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
       
     - name: Run baseline scan on dev environment
       if: github.ref == 'refs/heads/dev'
