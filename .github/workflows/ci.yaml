@@ -194,32 +194,23 @@ jobs:
     - name: Pull Docker image for k6
       run: docker pull grafana/k6
 
-    - name: Selenium test for Dev environment
-      if: github.ref == 'refs/heads/dev'
+    - name: Run environment-specific tests and scans
       run: |
-        dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
-    
-    - name: Selenium test for QA environment
-      if: github.ref == 'refs/heads/qa'
-      run: |
-        dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
-
-    - name: Run baseline scan on dev environment
-      if: github.ref == 'refs/heads/dev'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
-
-    - name: Run baseline scan test on qa environment
-      if: github.ref == 'refs/heads/qa'
-      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
-    
-
-    - name: Run k6 load test, capture report
-      if: github.ref == 'refs/heads/dev'
-      run: docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
-
-    - name: Run k6 load test, capture report
-      if: github.ref == 'refs/heads/qa'
-      run: docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
+        if [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+          echo "---------------Running Selenium test for Dev environment---------------"
+          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+          echo "---------------Running baseline scan on dev environment---------------"
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          echo "---------------Running k6 load test for Dev environment---------------"
+          docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
+        elif [[ "$GITHUB_REF" == "refs/heads/qa" ]]; then
+          echo "---------------Running Selenium test for QA environment---------------"
+          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
+          echo "---------------Running baseline scan on QA environment---------------"
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          echo "---------------Running k6 load test for QA environment---------------"
+          docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
+        fi
 
     - name: Upload Selenium Test Results
       if: github.ref == 'refs/heads/dev'
