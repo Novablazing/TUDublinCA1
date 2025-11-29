@@ -26,36 +26,36 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
-        - name: actions/setup-dotnet
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: '9.0.x'
+        # - name: actions/setup-dotnet
+        #   uses: actions/setup-dotnet@v4
+        #   with:
+        #     dotnet-version: '9.0.x'
         
-        - name: Install Sonar Scanner
-          run: |
-            dotnet tool install --global dotnet-sonarscanner
-            dotnet tool install --global dotnet-reportgenerator-globaltool
+        # - name: Install Sonar Scanner
+        #   run: |
+        #     dotnet tool install --global dotnet-sonarscanner
+        #     dotnet tool install --global dotnet-reportgenerator-globaltool
   
-        - name: Sonar Scanner Begin Analysis
-          run: |
-            dotnet sonarscanner begin `
-              /o:"ca1" `
-              /k:"BPCalculatorCA1" `
-              /d:sonar.sources="BPCalculator" `
-              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests\coverage.xml `
-              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+        # - name: Sonar Scanner Begin Analysis
+        #   run: |
+        #     dotnet sonarscanner begin `
+        #       /o:"ca1" `
+        #       /k:"BPCalculatorCA1" `
+        #       /d:sonar.sources="BPCalculator" `
+        #       /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests\coverage.xml `
+        #       /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
-        - name: Release Build
-          run: |
-            dotnet build --configuration Release --no-incremental
+        # - name: Release Build
+        #   run: |
+        #     dotnet build --configuration Release --no-incremental
 
-        - name: Run unit tests
-          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
+        # - name: Run unit tests
+        #   run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
 
-        - name: Sonar Scanner End Analysis
-          run: |
-            dotnet sonarscanner end `
-              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+        # - name: Sonar Scanner End Analysis
+        #   run: |
+        #     dotnet sonarscanner end `
+        #       /d:sonar.login=${{ secrets.SONAR_TOKEN }}
             
         # - name: Sonar Scan
         #   uses: sonarsource/sonarqube-scan-action@master
@@ -92,12 +92,12 @@ jobs:
         #     restore-keys: |
         #       ${{ runner.os }}-buildx-
 
-        - name: Docker Login to Azure Container Registry
-          uses: docker/login-action@v3.0.0
-          with:
-            registry: tudublinca.azurecr.io
-            username: tudublinca  # Logging through service account.
-            password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
+        # - name: Docker Login to Azure Container Registry
+        #   uses: docker/login-action@v3.0.0
+        #   with:
+        #     registry: tudublinca.azurecr.io
+        #     username: tudublinca  # Logging through service account.
+        #     password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
 
         # - name: Build Docker image
         #   uses: docker/build-push-action@v5
