@@ -42,7 +42,7 @@ jobs:
               /o:"ca1" \
               /k:"BPCalculatorCA1" \
               /d:sonar.sources="BPCalculator" \
-              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests\coverage.xml \
+              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests/coverage.xml \
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
         - name: Release Build
