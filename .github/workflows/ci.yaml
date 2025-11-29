@@ -134,7 +134,7 @@ jobs:
             path: trivy-report.txt
         
 
-  BP-application-CD-dev-Non-Production:
+  BP-application-CD-DEV-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/dev' }}
     needs: BP-application-CI
     runs-on: ubuntu-22.04  
@@ -178,9 +178,9 @@ jobs:
   #       fi
 
   Post-Deployment-Tests:
-    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') }}
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
     needs: 
-      - BP-application-CD-dev-Non-Production
+      - BP-application-CD-DEV-Non-Production
       - BP-application-CD-QA-Non-Production
     runs-on: ubuntu-22.04
 
@@ -219,13 +219,13 @@ jobs:
         name: Selenium Test Results
         path: Selenium/TestResults/*.trx
 
-    - name: Upload Reports
+    - name: Upload Zap Reports
       uses: actions/upload-artifact@v4
       with:
         name: ZAP Report
         path: /report/zapreport.html
 
-    - name: Upload Reports
+    - name: Upload Load Test Reports
       uses: actions/upload-artifact@v4
       with:
         name: K6 Report
