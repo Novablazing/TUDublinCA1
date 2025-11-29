@@ -17,7 +17,7 @@ export default function () {
   // 2. POST form data (simplified, no CSRF token)
   const payload = {
     Systolic: '90',
-    Diastolic: '700',
+    Diastolic: '70',
   };
 
   res = http.post(`${BASE_URL}${CALC_PATH}`, payload);
