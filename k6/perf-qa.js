@@ -17,7 +17,7 @@ export default function () {
   // 2. POST form data (simplified, no CSRF token)
   const payload = {
     Systolic: '90',
-    Diastolic: '700',
+    Diastolic: '70',
   };
 
   res = http.post(`${BASE_URL}${CALC_PATH}`, payload);
@@ -28,7 +28,7 @@ export default function () {
   });
 
   // 3. Simulate user actions
-  sleep(10); // wait for 1 second
+  sleep(1); // wait for 1 second
 
   // 4. Additional user actions can be added here
   // Example: res = http.post(`${BASE_URL}${CALC_PATH}`, payload);
