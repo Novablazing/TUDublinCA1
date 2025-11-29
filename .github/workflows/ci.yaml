@@ -113,7 +113,7 @@ jobs:
         
         - name: Docker Image Build and Push
           run: |
-            docker build -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+            docker build -f ./BPCalculator/Dockerfile -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
             docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
             docker images
 
