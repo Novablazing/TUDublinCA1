@@ -7,7 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPCalculator", "BPCalculato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPCalculator.Tests", "BPCalculator.Tests\BPCalculator.Tests.csproj", "{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}"
 EndProject
-
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPCalculator.BDD", "BPCalculator.BDD\BPCalculator.BDD.csproj", "{C73C343A-4575-4259-9C61-3FBA398486FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,7 +43,18 @@ Global
 		{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}.Release|x64.Build.0 = Release|Any CPU
 		{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}.Release|x86.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}.Release|x86.Build.0 = Release|Any CPU
-
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|x64.Build.0 = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|x64.ActiveCfg = Release|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|x64.Build.0 = Release|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{C73C343A-4575-4259-9C61-3FBA398486FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

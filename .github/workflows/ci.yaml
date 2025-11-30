@@ -56,6 +56,10 @@ jobs:
           run: |
             dotnet sonarscanner end \
               /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+
+        - name: BDD Tests
+          run: |
+            dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "html;LogFileName=BDDTestResults.html" --verbosity normal
             
         # - name: Sonar Scan
         #   uses: sonarsource/sonarqube-scan-action@master
@@ -92,12 +96,19 @@ jobs:
         #     restore-keys: |
         #       ${{ runner.os }}-buildx-
 
-        - name: Docker Login to Azure Container Registry
-          uses: docker/login-action@v3.0.0
+        - name: Log in to GitHub Container Registry
+          uses: docker/login-action@v3
           with:
-            registry: tudublinca.azurecr.io
-            username: tudublinca  # Logging through service account.
-            password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GHCR_TOKEN }}
+
+        # - name: Docker Login to Azure Container Registry
+        #   uses: docker/login-action@v3.0.0
+        #   with:
+        #     registry: tudublinca.azurecr.io
+        #     username: tudublinca  # Logging through service account.
+        #     password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
 
         # - name: Build Docker image
         #   uses: docker/build-push-action@v5
@@ -113,14 +124,14 @@ jobs:
         
         - name: Docker Image Build and Push
           run: |
-            docker build  -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
-            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+            docker build -t ghcr.io/novablazing/bpcalculator:${{ github.run_number }} .
+            docker push ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
             docker images
 
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@0.28.0
           with:
-            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+            image-ref: 'ghcr.io/novablazing/bpcalculator:${{ github.run_number }}'
             format: 'table'
             output: 'trivy-report.txt'
             ignore-unfixed: true
@@ -132,7 +143,12 @@ jobs:
           with:
             name: trivy-report
             path: trivy-report.txt
-        
+
+        - name: BDD Test Results
+          uses: actions/upload-artifact@v4
+          with:
+            name: BDD Test Results
+            path: BPCalculator.BDD/TestResults/*html
 
   BP-application-CD-DEV-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/dev' }}
@@ -145,7 +161,7 @@ jobs:
       with:
         app-name: ${{ env.DEV_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
 
   BP-application-CD-QA-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/qa' }}
@@ -158,24 +174,24 @@ jobs:
       with:
         app-name: ${{ env.QA_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
 
-  # BP-application-CD-Production:
-  #   if: ${{ always() && github.ref == 'refs/heads/main' }}
-  #   environment: 'prod'
-  #   needs: BP-application-CI
-  #   runs-on: ubuntu-22.04
+  # # BP-application-CD-Production:
+  # #   if: ${{ always() && github.ref == 'refs/heads/main' }}
+  # #   environment: 'prod'
+  # #   needs: BP-application-CI
+  # #   runs-on: ubuntu-22.04
 
-  #   steps:
-  #   - name: Populating variables For Non Production Environments
-  #     env:
-  #       BRANCH: ${{ github.ref_name }}
-  #     run: |
-  #       if [ "$BRANCH" = "main" ]; then
-  #         WEBAPP="${{ env.PROD_ENV }}"
-  #       elif [ "$BRANCH" = "stage" ]; then
-  #         WEBAPP="${{ env.STAGE_ENV }}"
-  #       fi
+  # #   steps:
+  # #   - name: Populating variables For Non Production Environments
+  # #     env:
+  # #       BRANCH: ${{ github.ref_name }}
+  # #     run: |
+  # #       if [ "$BRANCH" = "main" ]; then
+  # #         WEBAPP="${{ env.PROD_ENV }}"
+  # #       elif [ "$BRANCH" = "stage" ]; then
+  # #         WEBAPP="${{ env.STAGE_ENV }}"
+  # #       fi
 
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
@@ -213,7 +229,6 @@ jobs:
         fi
 
     - name: Upload Selenium Test Results
-      if: github.ref == 'refs/heads/dev'
       uses: actions/upload-artifact@v4
       with:
         name: Selenium Test Results
