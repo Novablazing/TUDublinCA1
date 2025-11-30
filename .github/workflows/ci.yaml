@@ -56,6 +56,10 @@ jobs:
           run: |
             dotnet sonarscanner end \
               /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+
+        - name: BDD Tests
+          run: |
+            dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "trx;LogFileName=TestResults.trx" --logger "html;LogFileName=BDDTestResults.html"
             
         # - name: Sonar Scan
         #   uses: sonarsource/sonarqube-scan-action@master
@@ -92,12 +96,12 @@ jobs:
         #     restore-keys: |
         #       ${{ runner.os }}-buildx-
 
-        - name: Docker Login to Azure Container Registry
-          uses: docker/login-action@v3.0.0
-          with:
-            registry: tudublinca.azurecr.io
-            username: tudublinca  # Logging through service account.
-            password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
+        # - name: Docker Login to Azure Container Registry
+        #   uses: docker/login-action@v3.0.0
+        #   with:
+        #     registry: tudublinca.azurecr.io
+        #     username: tudublinca  # Logging through service account.
+        #     password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
 
         # - name: Build Docker image
         #   uses: docker/build-push-action@v5
@@ -111,121 +115,126 @@ jobs:
         #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
 
         
-        - name: Docker Image Build and Push
-          run: |
-            docker build  -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
-            docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
-            docker images
+  #       - name: Docker Image Build and Push
+  #         run: |
+  #           docker build  -t tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }} .
+  #           docker push tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+  #           docker images
 
-        - name: Run Trivy vulnerability scanner
-          uses: aquasecurity/trivy-action@0.28.0
-          with:
-            image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
-            format: 'table'
-            output: 'trivy-report.txt'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+  #       - name: Run Trivy vulnerability scanner
+  #         uses: aquasecurity/trivy-action@0.28.0
+  #         with:
+  #           image-ref: 'tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}'
+  #           format: 'table'
+  #           output: 'trivy-report.txt'
+  #           ignore-unfixed: true
+  #           vuln-type: 'os,library'
+  #           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
         - name: Upload Trivy report
           uses: actions/upload-artifact@v4
           with:
             name: trivy-report
             path: trivy-report.txt
-        
 
-  BP-application-CD-DEV-Non-Production:
-    if: ${{ always() && github.ref == 'refs/heads/dev' }}
-    needs: BP-application-CI
-    runs-on: ubuntu-22.04  
-    
-    steps:
-    - name: Deploy to Azure Web App for Container for dev environment
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ env.DEV_ENV }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+        - name: BDD Test Results
+          uses: actions/upload-artifact@v4
+          with:
+            name: BDD Test Results
+            path: BPCalculator.BDD/TestResults/*html
 
-  BP-application-CD-QA-Non-Production:
-    if: ${{ always() && github.ref == 'refs/heads/qa' }}
-    needs: BP-application-CI
-    runs-on: ubuntu-22.04  
-    
-    steps:
-    - name: Deploy to Azure Web App for Container for Qa Environment
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ env.QA_ENV }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
-        images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
-
-  # BP-application-CD-Production:
-  #   if: ${{ always() && github.ref == 'refs/heads/main' }}
-  #   environment: 'prod'
+  # BP-application-CD-DEV-Non-Production:
+  #   if: ${{ always() && github.ref == 'refs/heads/dev' }}
   #   needs: BP-application-CI
+  #   runs-on: ubuntu-22.04  
+    
+  #   steps:
+  #   - name: Deploy to Azure Web App for Container for dev environment
+  #     uses: azure/webapps-deploy@v3
+  #     with:
+  #       app-name: ${{ env.DEV_ENV }}
+  #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+  #       images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+  # BP-application-CD-QA-Non-Production:
+  #   if: ${{ always() && github.ref == 'refs/heads/qa' }}
+  #   needs: BP-application-CI
+  #   runs-on: ubuntu-22.04  
+    
+  #   steps:
+  #   - name: Deploy to Azure Web App for Container for Qa Environment
+  #     uses: azure/webapps-deploy@v3
+  #     with:
+  #       app-name: ${{ env.QA_ENV }}
+  #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
+  #       images: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+  # # BP-application-CD-Production:
+  # #   if: ${{ always() && github.ref == 'refs/heads/main' }}
+  # #   environment: 'prod'
+  # #   needs: BP-application-CI
+  # #   runs-on: ubuntu-22.04
+
+  # #   steps:
+  # #   - name: Populating variables For Non Production Environments
+  # #     env:
+  # #       BRANCH: ${{ github.ref_name }}
+  # #     run: |
+  # #       if [ "$BRANCH" = "main" ]; then
+  # #         WEBAPP="${{ env.PROD_ENV }}"
+  # #       elif [ "$BRANCH" = "stage" ]; then
+  # #         WEBAPP="${{ env.STAGE_ENV }}"
+  # #       fi
+
+  # Post-Deployment-Tests:
+  #   if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
+  #   needs: 
+  #     - BP-application-CD-DEV-Non-Production
+  #     - BP-application-CD-QA-Non-Production
   #   runs-on: ubuntu-22.04
 
   #   steps:
-  #   - name: Populating variables For Non Production Environments
-  #     env:
-  #       BRANCH: ${{ github.ref_name }}
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - name: Pull Docker image for ZAP
+  #     run: docker pull zaproxy/zap-weekly
+    
+  #   - name: Pull Docker image for k6
+  #     run: docker pull grafana/k6
+
+  #   - name: Run environment-specific tests and scans
   #     run: |
-  #       if [ "$BRANCH" = "main" ]; then
-  #         WEBAPP="${{ env.PROD_ENV }}"
-  #       elif [ "$BRANCH" = "stage" ]; then
-  #         WEBAPP="${{ env.STAGE_ENV }}"
+  #       if [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+  #         echo "---------------Running Selenium test for Dev environment---------------"
+  #         dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+  #         echo "---------------Running baseline scan on dev environment---------------"
+  #         docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+  #         echo "---------------Running k6 load test for Dev environment---------------"
+  #         docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
+  #       elif [[ "$GITHUB_REF" == "refs/heads/qa" ]]; then
+  #         echo "---------------Running Selenium test for QA environment---------------"
+  #         dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
+  #         echo "---------------Running baseline scan on QA environment---------------"
+  #         docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+  #         echo "---------------Running k6 load test for QA environment---------------"
+  #         docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
   #       fi
 
-  Post-Deployment-Tests:
-    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
-    needs: 
-      - BP-application-CD-DEV-Non-Production
-      - BP-application-CD-QA-Non-Production
-    runs-on: ubuntu-22.04
+  #   - name: Upload Selenium Test Results
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: Selenium Test Results
+  #       path: Selenium/TestResults/*.trx
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+  #   - name: Upload Zap Reports
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: ZAP Report
+  #       path: /report/zapreport.html
 
-    - name: Pull Docker image for ZAP
-      run: docker pull zaproxy/zap-weekly
-    
-    - name: Pull Docker image for k6
-      run: docker pull grafana/k6
-
-    - name: Run environment-specific tests and scans
-      run: |
-        if [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
-          echo "---------------Running Selenium test for Dev environment---------------"
-          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
-          echo "---------------Running baseline scan on dev environment---------------"
-          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
-          echo "---------------Running k6 load test for Dev environment---------------"
-          docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
-        elif [[ "$GITHUB_REF" == "refs/heads/qa" ]]; then
-          echo "---------------Running Selenium test for QA environment---------------"
-          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
-          echo "---------------Running baseline scan on QA environment---------------"
-          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
-          echo "---------------Running k6 load test for QA environment---------------"
-          docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
-        fi
-
-    - name: Upload Selenium Test Results
-      uses: actions/upload-artifact@v4
-      with:
-        name: Selenium Test Results
-        path: Selenium/TestResults/*.trx
-
-    - name: Upload Zap Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: ZAP Report
-        path: /report/zapreport.html
-
-    - name: Upload Load Test Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: K6 Report
-        path: ${{ github.workspace }}/k6report.txt
+  #   - name: Upload Load Test Reports
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: K6 Report
+  #       path: ${{ github.workspace }}/k6report.txt
