@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace BPCalculator.E2ETests.Features
+namespace BPCalculator.BDD.Features
 {
     using Reqnroll;
     using System;

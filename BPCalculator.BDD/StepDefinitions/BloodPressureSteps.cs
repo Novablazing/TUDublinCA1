@@ -3,7 +3,7 @@ using Reqnroll;
 using Xunit;
 using BPCalculator;
 
-namespace BPCalculator.E2ETests.StepDefinitions
+namespace BPCalculator.BDD.StepDefinitions
 {
     [Binding]
     public class BloodPressureSteps
