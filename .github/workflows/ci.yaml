@@ -59,7 +59,7 @@ jobs:
 
         - name: BDD Tests
           run: |
-            dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "trx;LogFileName=TestResults.trx" --logger "html;LogFileName=BDDTestResults.html"
+            dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "html;LogFileName=BDDTestResults.html" --verbosity normal
             
         # - name: Sonar Scan
         #   uses: sonarsource/sonarqube-scan-action@master
@@ -131,11 +131,11 @@ jobs:
   #           vuln-type: 'os,library'
   #           severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
-        - name: Upload Trivy report
-          uses: actions/upload-artifact@v4
-          with:
-            name: trivy-report
-            path: trivy-report.txt
+        # - name: Upload Trivy report
+        #   uses: actions/upload-artifact@v4
+        #   with:
+        #     name: trivy-report
+        #     path: trivy-report.txt
 
         - name: BDD Test Results
           uses: actions/upload-artifact@v4
