@@ -131,7 +131,7 @@ jobs:
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@0.28.0
           with:
-            image-ref: 'ghcr.io/novablazing/bpcalculator/bpcalculator:${{ github.run_number }}'
+            image-ref: 'ghcr.io/novablazing/bpcalculator:${{ github.run_number }}'
             format: 'table'
             output: 'trivy-report.txt'
             ignore-unfixed: true
