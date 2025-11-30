@@ -26,8 +26,8 @@ namespace BPCalculator.BDD.Features
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Blood Pressure Category", "  In order to know my health status\r\n  As a user\r\n  I want to be told my blood pr" +
-                "essure category based on my systolic and diastolic readings", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Blood Pressure Category", ("  In order to know my health status\r\n  As a user\r\n  I want to be told my blood pr" +
+                "essure category based on my systolic and diastolic readings"), global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
