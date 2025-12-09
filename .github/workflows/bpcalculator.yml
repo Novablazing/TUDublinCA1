@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-     # - main
+      - master
       - dev
       - qa
     paths-ignore:
@@ -12,11 +12,11 @@ on:
 
 env:
   BRANCH: ${{ github.ref_name }}
-#  PUBLISH_PROFILE_DEV: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-#  PUBLISH_PROFILE_QA: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
+  REPOSITORY: ghcr.io/novablazing
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod01
   QA_ENV: qa-nonprod01
+  PROD_ENV: live-prod01
 
 jobs:
   BP-application-CI:
@@ -103,13 +103,6 @@ jobs:
             username: ${{ github.actor }}
             password: ${{ secrets.GHCR_TOKEN }}
 
-        # - name: Docker Login to Azure Container Registry
-        #   uses: docker/login-action@v3.0.0
-        #   with:
-        #     registry: tudublinca.azurecr.io
-        #     username: tudublinca  # Logging through service account.
-        #     password: ${{ secrets.AZURE_DOCKER_PASSWORD }}
-
         # - name: Build Docker image
         #   uses: docker/build-push-action@v5
         #   with:
@@ -124,14 +117,14 @@ jobs:
         
         - name: Docker Image Build and Push
           run: |
-            docker build -t ghcr.io/novablazing/bpcalculator:${{ github.run_number }} .
-            docker push ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+            docker build -t ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }} .
+            docker push ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
             docker images
 
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@0.28.0
           with:
-            image-ref: 'ghcr.io/novablazing/bpcalculator:${{ github.run_number }}'
+            image-ref: '${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}'
             format: 'table'
             output: 'trivy-report.txt'
             ignore-unfixed: true
@@ -161,7 +154,7 @@ jobs:
       with:
         app-name: ${{ env.DEV_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
 
   BP-application-CD-QA-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/qa' }}
@@ -174,24 +167,22 @@ jobs:
       with:
         app-name: ${{ env.QA_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
-        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
 
-  # # BP-application-CD-Production:
-  # #   if: ${{ always() && github.ref == 'refs/heads/main' }}
-  # #   environment: 'prod'
-  # #   needs: BP-application-CI
-  # #   runs-on: ubuntu-22.04
+  BP-application-CD-Production:
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    environment: 'prod'
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04
 
-  # #   steps:
-  # #   - name: Populating variables For Non Production Environments
-  # #     env:
-  # #       BRANCH: ${{ github.ref_name }}
-  # #     run: |
-  # #       if [ "$BRANCH" = "main" ]; then
-  # #         WEBAPP="${{ env.PROD_ENV }}"
-  # #       elif [ "$BRANCH" = "stage" ]; then
-  # #         WEBAPP="${{ env.STAGE_ENV }}"
-  # #       fi
+    steps:
+    - name: Deploy to Azure Web App for Container for Prod Environment
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.PROD_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
+        slot-name: 'stage'
 
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}

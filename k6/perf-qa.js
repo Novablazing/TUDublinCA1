@@ -28,11 +28,6 @@ export default function () {
   });
 
   // 3. Simulate user actions
-  sleep(1); // wait for 1 second
+  sleep(10); // wait for 10 second
 
-  // 4. Additional user actions can be added here
-  // Example: res = http.post(`${BASE_URL}${CALC_PATH}`, payload);
-  // check(res, { 'POST form status is 200': (r) => r.status === 200 });
-  // sleep(1); // wait for 1 second
-  // ...existing code...
 }
