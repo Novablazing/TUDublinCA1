@@ -1,4 +1,4 @@
-# bp
+# Blood Pressure Calculator
 Blood Pressure Calculator
 ASP.Net Core
 

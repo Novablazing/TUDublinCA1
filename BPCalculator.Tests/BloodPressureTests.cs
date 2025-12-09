@@ -98,9 +98,8 @@ namespace BPCalculator.Tests
         [Fact]
         public void Default_Recommendation_For_Unknown_Category()
         {
-             // This is hard to reach with the current logic as all paths are covered, 
              // but we can test the property directly if we could set Category to an invalid value.
-             // However, since Category is calculated, we rely on the fact that the switch expression covers all enum values.
+             // However, since Category is calculated, we rely on the fact that the switch expression covers all values.
              // The default case in the switch expression is technically unreachable given the current logic,
              // but good for safety. To test it, we'd need to mock or subclass, which is overkill.
              // We will assume the coverage tool sees all branches covered by the enum values.
