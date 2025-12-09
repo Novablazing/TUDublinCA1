@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-     # - main
+      - main
       - dev
       - qa
     paths-ignore:
@@ -12,6 +12,7 @@ on:
 
 env:
   BRANCH: ${{ github.ref_name }}
+  REPOSITORY: ghcr.io/novablazing
   REGISTRY_IMAGE: bpcalculator
   DEV_ENV: dev-nonprod01
   QA_ENV: qa-nonprod01
@@ -116,14 +117,14 @@ jobs:
         
         - name: Docker Image Build and Push
           run: |
-            docker build -t ghcr.io/novablazing/bpcalculator:${{ github.run_number }} .
-            docker push ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+            docker build -t ${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }} .
+            docker push ${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }}
             docker images
 
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@0.28.0
           with:
-            image-ref: 'ghcr.io/novablazing/bpcalculator:${{ github.run_number }}'
+            image-ref: '${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }}'
             format: 'table'
             output: 'trivy-report.txt'
             ignore-unfixed: true
@@ -153,7 +154,7 @@ jobs:
       with:
         app-name: ${{ env.DEV_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+        images: ${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }}
 
   BP-application-CD-QA-Non-Production:
     if: ${{ always() && github.ref == 'refs/heads/qa' }}
@@ -166,7 +167,7 @@ jobs:
       with:
         app-name: ${{ env.QA_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
-        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+        images: ${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }}
 
   BP-application-CD-Production:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
@@ -180,7 +181,7 @@ jobs:
       with:
         app-name: ${{ env.PROD_ENV }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
-        images: ghcr.io/novablazing/bpcalculator:${{ github.run_number }}
+        images: ${{ github.REPOSITORY }}/${{ github.REGISTRY_IMAGE }}:${{ github.run_number }}
         slot-name: 'stage'
 
   Post-Deployment-Tests:
