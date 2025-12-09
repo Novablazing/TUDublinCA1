@@ -1,7 +1,3 @@
-data "azurerm_resource_group" "RG1" {
-  name = "CSDCA1"
-}
-
 resource "azurerm_service_plan" "plandevdevelopment" {
   name                = "dev-NonProd"
   location            = data.azurerm_resource_group.RG1.location
