@@ -166,6 +166,10 @@ jobs:
         images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
         slot-name: 'stage'
 
+    - name: swap staging and production slots
+      run: |
+        az webapp deployment slot swap -n live-prod001 -g CSDCA1 --slot stage-prod001 --target-slot production 
+
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
     needs: 
