@@ -20,23 +20,8 @@ env:
   PROD_ENV: live-prod01
 
 jobs:
-  infrastructure-Provisioning:
-    if: ${{ github.ref == 'refs/heads/feature/dev' }}
-    runs-on: self-hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./Terraform
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./Terraform
-
   BP-application-CI:
-    needs: infrastructure-Provisioning
+  
     runs-on: ubuntu-22.04
     steps:
         - name: Checkout code
@@ -170,7 +155,7 @@ jobs:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
     environment: 'prod'
     needs: BP-application-CI
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
     - name: Deploy to Azure Web App for Container for Prod Environment

@@ -26,7 +26,7 @@ resource "azurerm_linux_web_app" "appproduction" {
 }
 
 resource "azurerm_linux_web_app_slot" "stage" {
-  name           = "example-slot"
+  name           = "stage-prod001"
   app_service_id = azurerm_linux_web_app.appproduction.id
 
   site_config {
