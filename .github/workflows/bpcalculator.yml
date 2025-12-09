@@ -19,6 +19,21 @@ env:
   PROD_ENV: live-prod01
 
 jobs:
+  infrastructure-Provisioning:
+    if: ${{ github.ref == 'refs/heads/feature/dev' }}
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./Terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./Terraform
+
   BP-application-CI:
     runs-on: ubuntu-22.04
 
@@ -61,25 +76,6 @@ jobs:
           run: |
             dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "html;LogFileName=BDDTestResults.html" --verbosity normal
             
-        # - name: Sonar Scan
-        #   uses: sonarsource/sonarqube-scan-action@master
-        #   env:
-        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        #   with:
-        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
-        #     args: >
-        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
-        #       -Dsonar.verbose=true
-        #       -Dsonar.sourceEncoding=UTF-8
-        #       -Dsonar.organization=ca1
-        #       -Dsonar.projectVersion=1.0
-        #       -Dsonar.host.url=https://sonarcloud.io
-        #       -Dsonar.branches=$BRANCH 
-
-        # - name: Sourcing Variables for Branch Tagging
-        #   id: Sourcing-Variables
-        #   run: |
-        #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
         # - name: Set up QEMU
         #   uses: docker/setup-qemu-action@v3
@@ -194,12 +190,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Pull Docker image for ZAP
-      run: docker pull zaproxy/zap-weekly
-    
-    - name: Pull Docker image for k6
-      run: docker pull grafana/k6
 
     - name: Run environment-specific tests and scans
       run: |
