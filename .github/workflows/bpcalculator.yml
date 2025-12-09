@@ -36,8 +36,8 @@ jobs:
         working-directory: ./Terraform
 
   BP-application-CI:
+    needs: infrastructure-Provisioning
     runs-on: ubuntu-22.04
-
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
