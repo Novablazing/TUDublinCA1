@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <TargetFrameworkVersion>net9.0</TargetFrameworkVersion>
+  </RunConfiguration>
+  <TestRunParameters>
+    <Parameter name="BaseUrl" value="https://qa-nonprod01.azurewebsites.net" />
+  </TestRunParameters>
+</RunSettings>

@@ -1,0 +1,238 @@
+name: Bp_Application_Build_and_Deployment_CA1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - dev
+      - qa
+    paths-ignore:
+      - '.github/workflows/**'
+
+env:
+  BRANCH: ${{ github.ref_name }}
+  REPOSITORY: ghcr.io/novablazing
+  REGISTRY_IMAGE: bpcalculator
+  DEV_ENV: dev-nonprod01
+  QA_ENV: qa-nonprod01
+  PROD_ENV: live-prod01
+
+jobs:
+  BP-application-CI:
+    runs-on: ubuntu-22.04
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: actions/setup-dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '9.0.x'
+        
+        - name: Install Sonar Scanner
+          run: |
+            dotnet tool install --global dotnet-sonarscanner
+            dotnet tool install --global dotnet-reportgenerator-globaltool
+  
+        - name: Sonar Scanner Begin Analysis
+          run: |
+            dotnet sonarscanner begin \
+              /o:"ca1" \
+              /k:"BPCalculatorCA1" \
+              /d:sonar.sources="BPCalculator" \
+              /d:sonar.cs.opencover.reportsPaths=BPCalculator.Tests/coverage.xml \
+              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+
+        - name: Release Build
+          run: |
+            dotnet build --configuration Release --no-incremental
+
+        - name: Run unit tests
+          run: dotnet test BPCalculator.Tests/BPCalculator.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage.xml --configuration Release
+
+        - name: Sonar Scanner End Analysis
+          run: |
+            dotnet sonarscanner end \
+              /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+
+        - name: BDD Tests
+          run: |
+            dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "html;LogFileName=BDDTestResults.html" --verbosity normal
+            
+        # - name: Sonar Scan
+        #   uses: sonarsource/sonarqube-scan-action@master
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #   with:
+        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
+        #     args: >
+        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
+        #       -Dsonar.verbose=true
+        #       -Dsonar.sourceEncoding=UTF-8
+        #       -Dsonar.organization=ca1
+        #       -Dsonar.projectVersion=1.0
+        #       -Dsonar.host.url=https://sonarcloud.io
+        #       -Dsonar.branches=$BRANCH 
+
+        # - name: Sourcing Variables for Branch Tagging
+        #   id: Sourcing-Variables
+        #   run: |
+        #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+        # - name: Set up QEMU
+        #   uses: docker/setup-qemu-action@v3
+
+        # - name: Set up Docker Buildx
+        #   uses: docker/setup-buildx-action@v3
+
+        # - name: Cache Docker layers
+        #   if: true
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: /tmp/.buildx-cache
+        #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+        #     restore-keys: |
+        #       ${{ runner.os }}-buildx-
+
+        - name: Log in to GitHub Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GHCR_TOKEN }}
+
+        # - name: Build Docker image
+        #   uses: docker/build-push-action@v5
+        #   with:
+        #     context: .
+        #   #  push: true
+        #     platforms: linux/amd64,linux/arm64
+        #     cache-from: type=local,src=/tmp/.buildx-cache
+        #     cache-to: type=local,dest=/tmp/.buildx-cache
+        #     file: ./Dockerfile
+        #     tags: tudublinca.azurecr.io/tudublin/bpcalculator:${{ github.run_number }}
+
+        
+        - name: Docker Image Build and Push
+          run: |
+            docker build -t ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }} .
+            docker push ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
+            docker images
+
+        - name: Run Trivy vulnerability scanner
+          uses: aquasecurity/trivy-action@0.28.0
+          with:
+            image-ref: '${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}'
+            format: 'table'
+            output: 'trivy-report.txt'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+        - name: Upload Trivy report
+          uses: actions/upload-artifact@v4
+          with:
+            name: trivy-report
+            path: trivy-report.txt
+
+        - name: BDD Test Results
+          uses: actions/upload-artifact@v4
+          with:
+            name: BDD Test Results
+            path: BPCalculator.BDD/TestResults/*html
+
+  BP-application-CD-DEV-Non-Production:
+    if: ${{ always() && github.ref == 'refs/heads/dev' }}
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04  
+    
+    steps:
+    - name: Deploy to Azure Web App for Container for dev environment
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.DEV_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
+
+  BP-application-CD-QA-Non-Production:
+    if: ${{ always() && github.ref == 'refs/heads/qa' }}
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04  
+    
+    steps:
+    - name: Deploy to Azure Web App for Container for Qa Environment
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.QA_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
+
+  BP-application-CD-Production:
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    environment: 'prod'
+    needs: BP-application-CI
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Deploy to Azure Web App for Container for Prod Environment
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.PROD_ENV }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
+        images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
+        slot-name: 'stage'
+
+  Post-Deployment-Tests:
+    if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
+    needs: 
+      - BP-application-CD-DEV-Non-Production
+      - BP-application-CD-QA-Non-Production
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Pull Docker image for ZAP
+      run: docker pull zaproxy/zap-weekly
+    
+    - name: Pull Docker image for k6
+      run: docker pull grafana/k6
+
+    - name: Run environment-specific tests and scans
+      run: |
+        if [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+          echo "---------------Running Selenium test for Dev environment---------------"
+          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
+          echo "---------------Running baseline scan on dev environment---------------"
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          echo "---------------Running k6 load test for Dev environment---------------"
+          docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
+        elif [[ "$GITHUB_REF" == "refs/heads/qa" ]]; then
+          echo "---------------Running Selenium test for QA environment---------------"
+          dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
+          echo "---------------Running baseline scan on QA environment---------------"
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          echo "---------------Running k6 load test for QA environment---------------"
+          docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
+        fi
+
+    - name: Upload Selenium Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: Selenium Test Results
+        path: Selenium/TestResults/*.trx
+
+    - name: Upload Zap Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: ZAP Report
+        path: /report/zapreport.html
+
+    - name: Upload Load Test Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: K6 Report
+        path: ${{ github.workspace }}/k6report.txt
