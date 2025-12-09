@@ -1,9 +1,16 @@
 name: Infra Provisioning for BP Calculator Application
 on:
     workflow_dispatch:
-    push:
-      paths-ignore:
-        - '.github/workflows/**'
+        inputs:
+            env:
+                description: 'Terraform environment to manage'
+                required: true
+                default: 'create'
+                type: choice
+                options:
+                    - create
+                    - delete
+        
 jobs:
   infrastructure-Provisioning:
     runs-on: self-hosted
