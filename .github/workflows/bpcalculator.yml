@@ -152,7 +152,7 @@ jobs:
         images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
 
   BP-application-CD-Production:
-    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    if: ${{ always() && github.ref == 'refs/heads/master' }}
     environment: 'prod'
     needs: BP-application-CI
     runs-on: self-hosted
