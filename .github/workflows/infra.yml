@@ -16,6 +16,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout code
+        if: ${{ github.event.inputs.env == 'create' }}
         uses: actions/checkout@v3
 
       - name: Terraform Init
