@@ -150,9 +150,8 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_QA }}
         images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
 
-  BP-application-CD-Production:
+  BP-application-CD-Staging-Production:
     if: ${{ always() && github.ref == 'refs/heads/master' }}
-    environment: 'prod'
     needs: BP-application-CI
     runs-on: self-hosted
 
@@ -164,10 +163,17 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
         images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
         slot-name: 'stage-prod001'
+    
+  BP-application-CD-Production:
+    if: ${{ always() && github.ref == 'refs/heads/master' }}
+    environment: 'prod'
+    needs: BP-application-CD-Staging-Production
+    runs-on: self-hosted
 
+    steps:
     - name: swap staging and production slots
       run: |
-        az webapp deployment slot swap -n live-prod001 -g CSDCA1 --slot stage-prod001 --target-slot production 
+        az webapp deployment slot swap -n live-prod001 -g CSDCA1 --slot stage-prod001 --target-slot production
 
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
