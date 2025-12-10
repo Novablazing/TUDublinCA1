@@ -7,7 +7,7 @@ export const options = {
 };
 
 export default function () {
-  const BASE_URL = 'https://dev-nonprod01.azurewebsites.net'; // your app URL
+  const BASE_URL = 'https://dev-nonprod001.azurewebsites.net'; // your app URL
   const CALC_PATH = '/'; // adjust if needed
 
   // 1. GET the page
