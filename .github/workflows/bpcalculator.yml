@@ -187,14 +187,14 @@ jobs:
           echo "---------------Running Selenium test for Dev environment---------------"
           dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.dev.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevtest-results.trx"
           echo "---------------Running baseline scan on dev environment---------------"
-          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://dev-nonprod001.azurewebsites.net/ -I -r zapreport.html
           echo "---------------Running k6 load test for Dev environment---------------"
           docker run -i grafana/k6 run - <k6/perf-dev.js > k6report.txt
         elif [[ "$GITHUB_REF" == "refs/heads/qa" ]]; then
           echo "---------------Running Selenium test for QA environment---------------"
           dotnet test Selenium/seleniumtest.csproj --settings Selenium/Selenium.qa.runsettings --configuration Release --logger "trx;LogFileName=seleniumdevqatest-results.trx"
           echo "---------------Running baseline scan on QA environment---------------"
-          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod01.azurewebsites.net/ -I -r zapreport.html
+          docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t https://qa-nonprod001.azurewebsites.net/ -I -r zapreport.html
           echo "---------------Running k6 load test for QA environment---------------"
           docker run -i grafana/k6 run - <k6/perf-qa.js > k6report.txt
         fi
