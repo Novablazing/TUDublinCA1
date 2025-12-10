@@ -7,7 +7,6 @@ on:
       - master
       - dev
       - qa
-      - feature/dev
     paths-ignore:
       - '.github/workflows/**'
 
