@@ -4,6 +4,6 @@
     <TargetFrameworkVersion>net9.0</TargetFrameworkVersion>
   </RunConfiguration>
   <TestRunParameters>
-    <Parameter name="BaseUrl" value="https://qa-nonprod01.azurewebsites.net" />
+    <Parameter name="BaseUrl" value="https://qa-nonprod001.azurewebsites.net" />
   </TestRunParameters>
 </RunSettings>
