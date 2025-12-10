@@ -23,5 +23,11 @@ jobs:
         working-directory: ./Terraform
 
       - name: Terraform Apply
+        if: ${{ github.event.inputs.env == 'create' }}
         run: terraform apply -auto-approve
+        working-directory: ./Terraform
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.env == 'delete' }}
+        run: terraform destroy -auto-approve
         working-directory: ./Terraform
