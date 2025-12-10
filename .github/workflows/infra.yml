@@ -1,0 +1,27 @@
+name: Infra Provisioning for BP Calculator Application
+on:
+    workflow_dispatch:
+        inputs:
+            env:
+                description: 'Terraform environment to manage'
+                required: true
+                default: 'create'
+                type: choice
+                options:
+                    - create
+                    - delete
+        
+jobs:
+  infrastructure-Provisioning:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./Terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./Terraform
