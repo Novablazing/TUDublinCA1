@@ -7,6 +7,7 @@ on:
       - master
       - dev
       - qa
+      - feature/dev
     paths-ignore:
       - '.github/workflows/**'
 
@@ -20,8 +21,8 @@ env:
 
 jobs:
   BP-application-CI:
+  
     runs-on: ubuntu-22.04
-
     steps:
         - name: Checkout code
           uses: actions/checkout@v3
@@ -61,25 +62,6 @@ jobs:
           run: |
             dotnet test BPCalculator.BDD/BPCalculator.BDD.csproj --configuration Release --logger "html;LogFileName=BDDTestResults.html" --verbosity normal
             
-        # - name: Sonar Scan
-        #   uses: sonarsource/sonarqube-scan-action@master
-        #   env:
-        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        #   with:
-        #     projectBaseDir: 'BPCalculator'  #Scans only BPCalculator folder to reduce the lines of code from sonarcloud since we are using free version
-        #     args: >
-        #       -Dsonar.projectKey=CA1_bloodpressurecalculator
-        #       -Dsonar.verbose=true
-        #       -Dsonar.sourceEncoding=UTF-8
-        #       -Dsonar.organization=ca1
-        #       -Dsonar.projectVersion=1.0
-        #       -Dsonar.host.url=https://sonarcloud.io
-        #       -Dsonar.branches=$BRANCH 
-
-        # - name: Sourcing Variables for Branch Tagging
-        #   id: Sourcing-Variables
-        #   run: |
-        #     BRANCH=${{ github.ref_name }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
         # - name: Set up QEMU
         #   uses: docker/setup-qemu-action@v3
@@ -173,7 +155,7 @@ jobs:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
     environment: 'prod'
     needs: BP-application-CI
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
     - name: Deploy to Azure Web App for Container for Prod Environment
@@ -183,6 +165,10 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
         images: ${{ env.REPOSITORY }}/${{ env.REGISTRY_IMAGE }}:${{ github.run_number }}
         slot-name: 'stage'
+
+    - name: swap staging and production slots
+      run: |
+        az webapp deployment slot swap -n live-prod001 -g CSDCA1 --slot stage-prod001 --target-slot production 
 
   Post-Deployment-Tests:
     if: ${{ always() && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa') }}
@@ -194,12 +180,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Pull Docker image for ZAP
-      run: docker pull zaproxy/zap-weekly
-    
-    - name: Pull Docker image for k6
-      run: docker pull grafana/k6
 
     - name: Run environment-specific tests and scans
       run: |
