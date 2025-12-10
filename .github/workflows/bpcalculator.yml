@@ -15,8 +15,8 @@ env:
   BRANCH: ${{ github.ref_name }}
   REPOSITORY: ghcr.io/novablazing
   REGISTRY_IMAGE: bpcalculator
-  DEV_ENV: dev-nonprod01
-  QA_ENV: qa-nonprod01
+  DEV_ENV: dev-nonprod001
+  QA_ENV: qa-nonprod001
   PROD_ENV: live-prod01
 
 jobs:
