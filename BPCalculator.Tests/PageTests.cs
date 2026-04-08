@@ -42,7 +42,7 @@ namespace BPCalculator.Tests
             Assert.IsType<PageResult>(result);
             Assert.False(page.ModelState.IsValid);
             Assert.True(page.ModelState.ContainsKey(string.Empty));
-            Assert.Equal("Systolic must be greater than Diastolic", page.ModelState[string.Empty].Errors[0].ErrorMessage);
+            Assert.Equal("Systolic must be greater than Diastolic", page.ModelState[string.Empty]?.Errors[0]?.ErrorMessage);
         }
 
         [Fact]
